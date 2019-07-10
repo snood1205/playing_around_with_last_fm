@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <% @action.each do |act| %>
+      <th><%= act %></th>
+    <% end %>
+    <th>Count</th>
+  </tr>
+  <% @count.each do |values, count| %>
+    <tr>
+      <% values.each do |value| %>
+        <td><%= value %></td>
+      <% end %>
+      <td><%= count %></td>
+    </tr>
+  <% end %>
+</table>
