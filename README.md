@@ -1,24 +1,4 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+This is a project to make a rails project to mess around with my last.fm data. Currently, it's working with my scrobbles up through July 10, 2019 (3 PM UTC).
+Eventually I'd like to pull from the last.fm API to update regularly. This is going to be experimenting with some cool ways to display the data.

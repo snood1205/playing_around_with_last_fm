@@ -1,0 +1,16 @@
+<table class="table">
+  <tr>
+    <th>Name</th>
+    <th>Artist</th>
+    <th>Album</th>
+    <th>Listened At</th>
+  </tr>
+  <% Track.find_each do |track| %>
+    <tr>
+      <td><%= track.name %></td>
+      <td><%= track.artist %></td>
+      <td><%= track.album %></td>
+      <td><%= track.listened_at %></td>
+    </tr>
+  <% end %>
+</table>
