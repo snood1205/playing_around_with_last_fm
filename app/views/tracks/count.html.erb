@@ -1,7 +1,7 @@
 <table class="table">
   <tr>
     <% @action.each do |act| %>
-      <th scope="col"><%= act %></th>
+      <th scope="col"><%= act.capitalize %></th>
     <% end %>
     <th>Count</th>
   </tr>

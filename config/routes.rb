@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :tracks
   resource :tracks, except: :show do
     attributes = %w[artist name album]
     (1..attributes.size).each do |size|
