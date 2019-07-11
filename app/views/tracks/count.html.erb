@@ -7,8 +7,12 @@
   </tr>
   <% @tracks.each do |values, count| %>
     <tr>
-      <% values.each do |value| %>
-        <td><%= value %></td>
+      <% if values.is_a? Array %>
+        <% values.each do |value| %>
+          <td><%= value %></td>
+        <% end %>
+      <% else %>
+        <td><%= values %></td>
       <% end %>
       <td><%= count %></td>
     </tr>
