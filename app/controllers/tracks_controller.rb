@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TracksController < ApplicationController
-  VALID_BY_ACTIONS = %i[artist album name name_and_artist].freeze
+  VALID_BY_ACTIONS = %i[artist album name].freeze
 
   def index
     @tracks = Track.all
@@ -12,13 +12,12 @@ class TracksController < ApplicationController
   end
 
   def action_missing(method)
-    if method.starts_with 'by_'
+    if method.starts_with? 'by_'
       @action = method.match(/by_(\w+)/)[1]
-      return super unless VALID_BY_ACTIONS.include? action
-      @action = action.split('_and_').map &:to_sym
+      @action = @action.split('_and_').map &:to_sym
+      return super unless @action.all? {|attr| VALID_BY_ACTIONS.include? attr}
       # This is formatted as such {actions => count}
-      @tracks = Track.group(*@action).count
-      binding.pry
+      @tracks = Track.group(*@action).count.sort_by{|_, v| -v}
       render :count
     else
       super

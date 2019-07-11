@@ -1,11 +1,11 @@
-<table>
+<table class="table">
   <tr>
     <% @action.each do |act| %>
-      <th><%= act %></th>
+      <th scope="col"><%= act %></th>
     <% end %>
     <th>Count</th>
   </tr>
-  <% @count.each do |values, count| %>
+  <% @tracks.each do |values, count| %>
     <tr>
       <% values.each do |value| %>
         <td><%= value %></td>
