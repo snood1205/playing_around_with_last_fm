@@ -8,5 +8,5 @@ Steps:
 1. Run `bundle install` to install all the gems
 2. Run `rails db:create` to create the database
 3. Run `rails db:migrate` to migrate the database
-4. Run `./setup.sh` to input your last.fm API Key and username (You can get a last.fm API key [here](https://www.last.fm/api/account/create)
+4. Run `./setup.sh` to input your last.fm API Key and username (You can get a last.fm API key [here](https://www.last.fm/api/account/create))
 5. Run `rails db:seed` to fetch all your tracks and seed them into the database
