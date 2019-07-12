@@ -1,4 +1,4 @@
-# Messing Around with Last.FM
+# Playing Around with Last.FM
 [![CircleCI](https://circleci.com/gh/snood1205/playing_around_with_last_fm.svg?style=svg)](https://circleci.com/gh/snood1205/playing_around_with_last_fm)
 
 This is a project to make a rails project to mess around with my last.fm data. You can pull from the last.fm API to update regularly. This is going to be experimenting with some cool ways to display the data.
