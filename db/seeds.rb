@@ -5,10 +5,5 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-require 'csv'
 
-tracks = CSV.read 'snood1205.csv'
-tracks.each do |artist, album, name, listened_at|
-  listened_at = DateTime.parse listened_at unless listened_at.nil?
-  Track.create artist: artist, album: album, name: name, listened_at: listened_at
-end
+Track.fetch_new_tracks
