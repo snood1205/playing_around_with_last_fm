@@ -1,4 +1,6 @@
 class Track < ApplicationRecord
+  validates_presence_of :name
+
   class << self
     def fetch_new_tracks
       last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
