@@ -47,13 +47,16 @@ class Track < ApplicationRecord
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], 1, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
-      rescue StandardError
+      rescue NoMethodError
+        warn "\n== Error Fetching Pages =="
+        warn json
+        warn 'Quiting now...'
+        exit 1
+      rescue JSON::ParserError
         puts "fetch retry number #{retry_count + 1}"
-        if retry_count < 5
-          fetch_total_pages retry_count + 1 
-        else
-          raise FetchError.new 'unable to fetch number of total pages'
-        end
+        return fetch_total_pages retry_count + 1 if retry_count < 5
+
+        raise FetchError, 'unable to fetch number of total pages'
       end
     end
 
@@ -62,19 +65,19 @@ class Track < ApplicationRecord
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['track']
-      rescue StandardError
+      rescue JSON::ParserError
         puts "fetch retry number #{retry_count + 1}"
-        if retry_count < 5
-          fetch_tracks page_number, retry_count + 1
-        else
-          raise FetchError.new "unable to fetch page number #{page_number}"
-        end
+        return fetch_tracks page_number, retry_count + 1 if retry_count < 5
+
+        raise FetchError, "unable to fetch page number #{page_number}"
       end
     end
 
     def generate_url(api_key, page_number, user_name)
-      %W[ws.audioscrobbler.com
-         /2.0/?method=user.getrecenttracks&user=#{user_name}\&api_key=#{api_key}&format=json&page=#{page_number}]
+      %W[
+        ws.audioscrobbler.com
+       /2.0/?method=user.getrecenttracks&user=#{user_name}\&api_key=#{api_key}&format=json&page=#{page_number}
+      ]
     end
   end
 end
