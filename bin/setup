@@ -14,6 +14,8 @@ end
 def check_for_env
   return false unless File.exist? '.env'
 
+  puts "\n== ENV File Exists=="
+
   ENV.key?('USERNAME') && ENV.key?('API_KEY')
 end
 
