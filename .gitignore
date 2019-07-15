@@ -30,3 +30,6 @@
 .env
 
 /.idea/
+
+# Ignore file written to for JSON parser errors during testing.
+response.html

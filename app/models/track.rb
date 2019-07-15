@@ -49,7 +49,11 @@ class Track < ApplicationRecord
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue StandardError
         puts "fetch retry number #{retry_count + 1}"
-        fetch_total_pages retry_count + 1 if retry_count < 5
+        if retry_count < 5
+          fetch_total_pages retry_count + 1 
+        else
+          raise FetchError.new 'unable to fetch number of total pages'
+        end
       end
     end
 
@@ -60,7 +64,11 @@ class Track < ApplicationRecord
         JSON.parse(json)['recenttracks']['track']
       rescue StandardError
         puts "fetch retry number #{retry_count + 1}"
-        fetch_tracks page_number, retry_count + 1 if retry_count < 5
+        if retry_count < 5
+          fetch_tracks page_number, retry_count + 1
+        else
+          raise FetchError.new "unable to fetch page number #{page_number}"
+        end
       end
     end
 
