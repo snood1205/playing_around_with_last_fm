@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe TracksController, type: :controller do
-  context '#index' do
+  xcontext '#index' do
     before do
       @track_count = rand 1..100
       @track_count.times { create :track }
@@ -25,7 +25,7 @@ RSpec.describe TracksController, type: :controller do
     end
   end
 
-  context '#action_missing' do
+  xcontext '#action_missing' do
     attributes = %w[artist name album]
     (1..attributes.size).each do |size|
       attributes.permutation(size).each do |attrs|
