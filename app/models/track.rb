@@ -5,6 +5,7 @@ class Track < ApplicationRecord
 
   class << self
     def fetch_new_tracks(job = nil)
+      Status.start_importing
       last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
       total_pages = fetch_total_pages job
       puts_or_log "total pages fetched: #{total_pages}", job
@@ -12,6 +13,8 @@ class Track < ApplicationRecord
         tracks = fetch_tracks page_number, job
         break if process_tracks(tracks, last_time, page_number) == 'done'
       end
+    ensure
+      Status.end_importing
     end
 
     private
