@@ -13,7 +13,8 @@ namespace :tracks do
     Track.delete_all
   end
 
-  desc reset: :environment do
+  desc 'Reset tracks'
+  task reset: :environment do
     Rake::Task['tracks:delete_all'].invoke
     Rake::Task['tracks:fetch'].invoke
   end
