@@ -1,5 +1,9 @@
 require: rubocop-rails
 
+AllCops:
+  Exclude:
+    - db/schema.rb
+
 Style/Documentation:
   Enabled: false
 
@@ -12,3 +16,4 @@ Rails/Output:
 # Prefer character literal for certain situations such as flags
 Style/CharacterLiteral:
   Enabled: false
+
