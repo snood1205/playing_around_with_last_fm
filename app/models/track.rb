@@ -50,12 +50,7 @@ class Track < ApplicationRecord
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], 1, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
-      rescue NoMethodError
-        warn "\n== Error Fetching Pages =="
-        warn json
-        warn 'Quiting now...'
-        exit 1
-      rescue JSON::ParserError
+      rescue JSON::ParserError, NoMethodError
         puts "fetch retry number #{retry_count + 1}"
         return fetch_total_pages retry_count + 1 if retry_count < 5
 
@@ -68,7 +63,7 @@ class Track < ApplicationRecord
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['track']
-      rescue JSON::ParserError
+      rescue JSON::ParserError, NoMethodError
         puts "fetch retry number #{retry_count + 1}"
         return fetch_tracks page_number, retry_count + 1 if retry_count < 5
 
