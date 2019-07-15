@@ -18,8 +18,8 @@ class Track < ApplicationRecord
 
     def process_tracks(tracks, last_time)
       tracks.each do |track|
-        listened_at = create_track track, last_time
-        return 'done' if listened_at <= last_time
+        was_already_inserted = create_track track, last_time
+        return 'done' if was_already_inserted
       end
     end
 
@@ -38,8 +38,9 @@ class Track < ApplicationRecord
         # a method should be devised in the future to prevent this error.
         listened_at = DateTime.now
       end
-      Track.create artist: artist, album: album, name: name, listened_at: listened_at unless listened_at <= last_time
-      listened_at
+      was_already_inserted = listened_at <= last_time
+      Track.create artist: artist, album: album, name: name, listened_at: listened_at unless was_already_inserted
+      was_already_inserted
     end
 
     def fetch_total_pages(retry_count = 0)
@@ -76,7 +77,7 @@ class Track < ApplicationRecord
     def generate_url(api_key, page_number, user_name)
       %W[
         ws.audioscrobbler.com
-       /2.0/?method=user.getrecenttracks&user=#{user_name}\&api_key=#{api_key}&format=json&page=#{page_number}
+        /2.0/?method=user.getrecenttracks&user=#{user_name}\&api_key=#{api_key}&format=json&page=#{page_number}
       ]
     end
   end
