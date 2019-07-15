@@ -37,3 +37,4 @@ response_*.html
 
 # Ignore documentation files
 /doc/
+/.yardoc/
