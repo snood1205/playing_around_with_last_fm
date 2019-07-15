@@ -33,3 +33,4 @@
 
 # Ignore file written to for JSON parser errors during testing.
 response.html
+response_*.html
