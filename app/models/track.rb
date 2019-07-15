@@ -17,7 +17,17 @@ class Track < ApplicationRecord
           artist = track['artist']['#track']
           album = track['album']['#track']
           name = track['name']
-          listened_at = DateTime.parse track['date']['#text']
+          if track.key? 'date'
+            listened_at = DateTime.parse track['date']['#text']
+          else
+            # This might be _slightly_ inaccurate, but if the listened_at provided from last.fm is nil
+            # then it means the song is currently being listened to. Alternatively, we could potentially
+            # decide to not store these or store as nil. The issue with storing these with nil is if the
+            # song is currently playing but does not hit the scrobble threshold (it is set variably from 50%-100% of
+            # the track) then it could end up storing a track that was not actually scrobbled. Potentially
+            # a method should be devised in the future to prevent this error.
+            listened_at = DateTime.now
+          end
           if listened_at <= last_time
             break_outer = true
             break
