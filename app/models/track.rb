@@ -8,7 +8,7 @@ class Track < ApplicationRecord
       Status.start_importing
       last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
       total_pages = fetch_total_pages job
-      puts_or_log "total pages fetched: #{total_pages}", job
+      puts_with_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
         tracks = fetch_tracks page_number, job
         break if process_tracks(tracks, last_time, page_number) == 'done'
@@ -49,12 +49,12 @@ class Track < ApplicationRecord
     end
 
     def fetch_total_pages(job, retry_count = 0)
-      puts_or_log 'fetching total pages...', job
+      puts_with_log 'fetching total pages...', job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], 1, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue JSON::ParserError, NoMethodError
-        puts "fetch retry number #{retry_count + 1}"
+        puts_with_log "fetch retry number #{retry_count + 1}", :warn
         return fetch_total_pages retry_count + 1 if retry_count < 5
 
         raise FetchError, 'unable to fetch number of total pages'
@@ -62,12 +62,12 @@ class Track < ApplicationRecord
     end
 
     def fetch_tracks(page_number, job, retry_count = 0)
-      puts_or_log "fetching page #{page_number}", job
+      puts_with_log "fetching page #{page_number}", job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['track']
       rescue JSON::ParserError, NoMethodError
-        puts_or_log "fetch retry number #{retry_count + 1}", job
+        puts_with_log "fetch retry number #{retry_count + 1}", job
         return fetch_tracks page_number, job, retry_count + 1 if retry_count < 5
 
         raise FetchError, "unable to fetch page number #{page_number}"
@@ -81,11 +81,22 @@ class Track < ApplicationRecord
       ]
     end
 
-    def puts_or_log(log, job, severity = :info)
+    def puts_with_log(log, job, severity = :info)
+      puts_method = case severity
+                    when :info
+                      :puts
+                    when :warn
+                      :warn
+                    when :error
+                      :raise
+                    else
+                      raise 'Invalid severity level'
+                    end
       if job.nil?
-        puts log
+        send puts_method, log
       else
         job.log log, severity
+        send puts_method, log
       end
     end
   end
