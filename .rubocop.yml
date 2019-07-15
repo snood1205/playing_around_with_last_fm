@@ -1,0 +1,10 @@
+require: rubocop-rails
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 120
+
+Rails/Output:
+  Enabled: false
