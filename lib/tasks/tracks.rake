@@ -5,7 +5,7 @@ require 'net/http'
 namespace :tracks do
   desc 'Fetch new tracks'
   task fetch: :environment do
-    FetchNewTracksJob.perform_now
+    FetchNewTracksWorker.new.perform
   end
 
   desc 'Delete all tracks'

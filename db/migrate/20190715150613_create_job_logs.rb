@@ -3,7 +3,7 @@
 class CreateJobLogs < ActiveRecord::Migration[5.2]
   def change
     create_table :job_logs do |t|
-      t.string :log
+      t.string :message
       t.integer :severity
 
       t.belongs_to :job

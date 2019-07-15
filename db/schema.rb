@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_183655) do
   enable_extension "plpgsql"
 
   create_table "job_logs", force: :cascade do |t|
-    t.string "log"
+    t.string "message"
     t.integer "severity"
     t.bigint "job_id"
     t.datetime "created_at", null: false
@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_183655) do
   create_table "jobs", force: :cascade do |t|
     t.datetime "started_at"
     t.string "name"
+    t.string "jid"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -35,7 +36,6 @@ ActiveRecord::Schema.define(version: 2019_07_15_183655) do
     t.boolean "importing"
   end
 
-  # noinspection RubyQuotedStringsInspection
   create_table "tracks", force: :cascade do |t|
     t.string "artist"
     t.string "album"
