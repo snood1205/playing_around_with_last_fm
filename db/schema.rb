@@ -17,15 +17,16 @@ ActiveRecord::Schema.define(version: 2019_07_15_150613) do
 
   create_table "job_logs", force: :cascade do |t|
     t.string "log"
-    t.bigint "jobs_id"
+    t.integer "severity"
+    t.bigint "job_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["jobs_id"], name: "index_job_logs_on_jobs_id"
+    t.index ["job_id"], name: "index_job_logs_on_job_id"
   end
 
-  create_table "jobs_tables", force: :cascade do |t|
-    t.datetime "job_started"
-    t.string "job_name"
+  create_table "jobs", force: :cascade do |t|
+    t.datetime "started_at"
+    t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

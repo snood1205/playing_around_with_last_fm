@@ -2,9 +2,9 @@
 
 class CreateJobs < ActiveRecord::Migration[5.2]
   def change
-    create_table :jobs_tables do |t|
-      t.datetime :job_started
-      t.string :job_name
+    create_table :jobs do |t|
+      t.datetime :started_at
+      t.string :name
 
       t.timestamps
     end
