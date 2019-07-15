@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
+# Controls actions to be taken on tracks
 class TracksController < ApplicationController
   VALID_BY_ACTIONS = %i[artist album name].freeze
 
   def index
-    @tracks = Track.find_each
+    @tracks = Track.all
   end
 
   # This should not do this as follows because this will hang.
   # TODO: Throw into a background job (https://github.com/snood1205/playing_around_with_last_fm/issues/1)
   def fetch_new_tracks
-    Track.fetch_new_tracks
+    jid = FetchNewTracksWorker.perform_async
+    redirect_to job_path jid
   end
 
   def action_missing(method)

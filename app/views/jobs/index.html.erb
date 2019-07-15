@@ -1,0 +1,16 @@
+<table>
+  <tr>
+    <th>ID</th>
+    <th>JID</th>
+    <th>Name</th>
+    <th>Started At</th>
+  </tr>
+  <% @jobs.each do |job| %>
+    <tr>
+      <td><%= link_to job.id, job_path(job.id) %></td>
+      <td><%= job.jid %></td>
+      <td><%= job.name %></td>
+      <td><%= job.started_at %></td>
+    </tr>
+  <% end %>
+</table>
