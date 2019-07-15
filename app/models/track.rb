@@ -10,20 +10,20 @@ class Track < ApplicationRecord
       puts "total pages fetched: #{total_pages}"
       (1..total_pages).each do |page_number|
         tracks = fetch_tracks page_number
-        break if process_tracks(tracks, last_time) == 'done'
+        break if process_tracks(tracks, last_time, page_number) == 'done'
       end
     end
 
     private
 
-    def process_tracks(tracks, last_time)
+    def process_tracks(tracks, last_time, page_number)
       tracks.each do |track|
-        was_already_inserted = create_track track, last_time
+        was_already_inserted = create_track track, last_time, page_number
         return 'done' if was_already_inserted
       end
     end
 
-    def create_track(track_hash, last_time)
+    def create_track(track_hash, last_time, page_number)
       artist = track_hash['artist']['#text']
       album = track_hash['album']['#text']
       name = track_hash['name']
@@ -36,6 +36,8 @@ class Track < ApplicationRecord
         # song is currently playing but does not hit the scrobble threshold (it is set variably from 50%-100% of
         # the track) then it could end up storing a track that was not actually scrobbled. Potentially
         # a method should be devised in the future to prevent this error.
+        return unless page_number == 1 # Do not insert song on each page
+
         listened_at = DateTime.now
       end
       was_already_inserted = listened_at <= last_time
