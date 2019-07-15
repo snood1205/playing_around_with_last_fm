@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 2019_07_15_183655) do
     t.boolean "importing"
   end
 
+  # noinspection RubyQuotedStringsInspection
   create_table "tracks", force: :cascade do |t|
     t.string "artist"
     t.string "album"
