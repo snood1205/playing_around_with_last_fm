@@ -5,7 +5,7 @@ require 'net/http'
 namespace :tracks do
   desc 'Fetch new tracks'
   task fetch: :environment do
-    Track.fetch_new_tracks
+    FetchNewTracksWorker.new.perform
   end
 
   desc 'Delete all tracks'
@@ -15,7 +15,9 @@ namespace :tracks do
 
   desc 'Reset tracks'
   task reset: :environment do
-    Rake::Task['tracks:delete_all'].invoke
-    Rake::Task['tracks:fetch'].invoke
+    puts 'Deleting all tracks'
+    Rake::Task['tracks:delete_all'].invoke '--verbose'
+    puts 'Fetching all tracks'
+    Rake::Task['tracks:fetch'].invoke '--verbose'
   end
 end
