@@ -2,12 +2,19 @@
 # frozen_string_literal: true
 
 require 'fileutils'
+require 'dotenv/load'
 
 # path to your application root.
 APP_ROOT = File.expand_path('..', __dir__)
 
 def system!(*args)
   system(*args) || abort("\n== Command #{args} failed ==")
+end
+
+def check_for_env
+  return false unless File.exist? '.env'
+
+  ENV.key?('USERNAME') && ENV.key?('API_KEY')
 end
 
 FileUtils.chdir APP_ROOT do
@@ -25,6 +32,25 @@ FileUtils.chdir APP_ROOT do
   # unless File.exist?('config/database.yml')
   #   cp 'config/database.yml.sample', 'config/database.yml'
   # end
+
+  # Get user's username to add to .env if .env does not exist or does not have proper values.
+
+  unless check_for_env
+
+    puts "\n==Getting last.fm information=="
+    print 'Input your last.fm username: '
+    username = gets.chomp
+    File.open '.env', ?a do |file|
+      file.write "USERNAME=#{username}\n"
+    end
+
+    # Get user's API key to add to .env
+    print 'Input your last.fm api key: '
+    api_key = gets.chomp
+    File.open '.env', ?a do |file|
+      file.write "API_KEY=#{api_key}\n"
+    end
+  end
 
   puts "\n== Preparing database =="
   system! 'bin/rails db:setup'

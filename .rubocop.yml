@@ -8,3 +8,7 @@ Metrics/LineLength:
 
 Rails/Output:
   Enabled: false
+
+# Prefer character literal for certain situations such as flags
+Style/CharacterLiteral:
+  Enabled: false
