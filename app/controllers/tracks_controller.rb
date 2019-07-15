@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Controls actions to be taken on tracks
 class TracksController < ApplicationController
   VALID_BY_ACTIONS = %i[artist album name].freeze
 
@@ -10,7 +11,7 @@ class TracksController < ApplicationController
   # This should not do this as follows because this will hang.
   # TODO: Throw into a background job (https://github.com/snood1205/playing_around_with_last_fm/issues/1)
   def fetch_new_tracks
-    Track.fetch_new_tracks
+
   end
 
   def action_missing(method)

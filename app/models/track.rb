@@ -1,9 +1,20 @@
 # frozen_string_literal: true
 
+# @!attribute name [rw]
+#  @return [String] the name of the track.
+# @!attribute artist [rw]
+#  @return [String] the artist of the track.
+# @!attribute album [rw]
+#  @return [String] the name of the album of the track.
+# @!attribute listened_at [rw]
+#  @return [DateTime] the time at which the song was lisstened to (and scrobbled to last.fm).
 class Track < ApplicationRecord
   validates :name, presence: true
 
   class << self
+    # Fetchs all new tracks from last.fm by using the API
+    #
+    # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
     def fetch_new_tracks(job = nil)
       Status.start_importing
       last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
@@ -11,7 +22,7 @@ class Track < ApplicationRecord
       puts_with_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
         tracks = fetch_tracks page_number, job
-        break if process_tracks(tracks, last_time, page_number) == 'done'
+        break unless process_tracks(tracks, last_time, page_number)
       end
     ensure
       Status.end_importing
@@ -19,13 +30,41 @@ class Track < ApplicationRecord
 
     private
 
+    # Processes track array (normally 50 tracks) and creates track based on information parsed out from
+    # the JSON data retrieved from the API.
+    #
+    # @param tracks [Hash[]] an array of hashes of track information parsed out from the API.
+    # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
+    #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
+    # @param page_number [Integer] the page number from which we are parsing tracks. Used to check against inserting
+    #  the song currently playing on every page.
+    # @return [Boolean] returns true if the job should be continued, false otherwise
     def process_tracks(tracks, last_time, page_number)
-      tracks.each do |track|
-        was_already_inserted = create_track track, last_time, page_number
-        return 'done' if was_already_inserted
-      end
+      tracks.all? { |track| create_track track, last_time, page_number }
     end
 
+    # Creates a track from the parsed hash.
+    #
+    # @param track_hash [Hash] the hash with the track information, the hash is more complex than presented but the
+    #  relevant information for the hash schema is:
+    #
+    #     {
+    #       'artist' => {
+    #         '#text' => String
+    #       },
+    #       'album' => {
+    #         '#text' => String
+    #       },
+    #       'name' => String,
+    #       'date' => DateTime # can be nil
+    #     }
+    #
+    # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
+    #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
+    # @param page_number [Integer] the page number from which we are parsing tracks. Used to check against inserting
+    #  the song currently playing on every page.
+    # @return [Boolean] returns whether or not the tracks should continue being created. This is based on the
+    #  listened_at check.
     def create_track(track_hash, last_time, page_number)
       artist = track_hash['artist']['#text']
       album = track_hash['album']['#text']
@@ -33,21 +72,25 @@ class Track < ApplicationRecord
       if track_hash.key? 'date'
         listened_at = DateTime.parse track_hash['date']['#text']
       else
-        # This might be _slightly_ inaccurate, but if the listened_at provided from last.fm is nil
-        # then it means the song is currently being listened to. Alternatively, we could potentially
-        # decide to not store these or store as nil. The issue with storing these with nil is if the
-        # song is currently playing but does not hit the scrobble threshold (it is set variably from 50%-100% of
-        # the track) then it could end up storing a track that was not actually scrobbled. Potentially
-        # a method should be devised in the future to prevent this error.
-        return unless page_number == 1 # Do not insert song on each page
+        # This might be _slightly_ inaccurate, but if the listened_at provided from last.fm is nil then it means the
+        # song is currently being listened to. Alternatively, we could potentially decide to not store these or store as
+        # nil. The issue with storing these with nil is if the song is currently playing but does not hit the scrobble
+        # threshold (it is set variably from 50%-100% of the track) then it could end up storing a track that was not
+        return true unless page_number == 1 # Do not insert song on each page
 
         listened_at = DateTime.now
       end
       was_already_inserted = listened_at <= last_time
       Track.create artist: artist, album: album, name: name, listened_at: listened_at unless was_already_inserted
-      was_already_inserted
+      !was_already_inserted
     end
 
+    # Fetches the total number of pages from the last.fm API.
+    #
+    # @param job [Job] the job to log to.
+    # @param retry_count [Integer] the retry attempt number (defaults to 0).
+    #
+    # @return [Hash] the JSON converted to a Ruby hash.
     def fetch_total_pages(job, retry_count = 0)
       puts_with_log 'fetching total pages...', job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], 1, ENV['USERNAME']))
@@ -61,6 +104,13 @@ class Track < ApplicationRecord
       end
     end
 
+    # Fetch the tracks from the last.fm API.
+    #
+    # @param page_number [Integer] the page number to query. API results are paginated to 50 tracks per page.
+    # @param job [Job] the job to log to.
+    # @param retry_count [Integer] the retry attempt number (defaults to 0).
+    #
+    # @return [Hash[]] an array of hashes of the tracks.
     def fetch_tracks(page_number, job, retry_count = 0)
       puts_with_log "fetching page #{page_number}", job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
@@ -74,30 +124,34 @@ class Track < ApplicationRecord
       end
     end
 
-    def generate_url(api_key, page_number, user_name)
+    # Provides an array to allow `Net::HTTP.get` to construct a URL.
+    #
+    # @param api_key [String] the api key being used to query last.fm. If you do not have an API key you can obtain one
+    #  at https://www.last.fm/api/account/create.
+    # @param page_number [Integer] the page number to request
+    # @param username [String] the last.fm username whose scrobbles you want to fetch.
+    #
+    # @return [String[]] the array to construct the URL for `Net::HTTP.get`
+    def generate_url(api_key, page_number, username)
       %W[
         ws.audioscrobbler.com
-        /2.0/?method=user.getrecenttracks&user=#{user_name}\&api_key=#{api_key}&format=json&page=#{page_number}
+        /2.0/?method=user.getrecenttracks&user=#{username}&api_key=#{api_key}&format=json&page=#{page_number}
       ]
     end
 
-    def puts_with_log(log, job, severity = :info)
-      puts_method = case severity
-                    when :info
-                      :puts
-                    when :warn
-                      :warn
-                    when :error
-                      :raise
-                    else
-                      raise 'Invalid severity level'
-                    end
-      if job.nil?
-        send puts_method, log
-      else
-        job.log log, severity
-        send puts_method, log
-      end
+    # If a job is provided, log both to the job and stdout/stderr, otherwise just logs to stdout/stderr.
+    #
+    # @param message [String] the text to be output and logged
+    # @param job [Job] the job to which to log the message
+    # @param severity [Symbol] the severity level for the message (can be :info, :warn, or :error). Defaults to `:info`.
+    def puts_with_log(message, job, severity = :info)
+      puts_method = {
+        info: :puts,
+        warn: :warn,
+        error: :warn # cowardly using warn instead of raise to allow application to continue running.
+      }[severity]
+      job&.log message, severity
+      send puts_method, message
     end
   end
 end
