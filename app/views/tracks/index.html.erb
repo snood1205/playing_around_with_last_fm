@@ -5,7 +5,7 @@
     <th>Album</th>
     <th>Listened At</th>
   </tr>
-  <% Track.find_each do |track| %>
+  <% @tracks.each do |track| %>
     <tr>
       <td><%= track.name %></td>
       <td><%= track.artist %></td>
