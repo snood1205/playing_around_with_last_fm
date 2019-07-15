@@ -10,4 +10,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  root 'tracks#by_artist_and_album_and_name'
 end
