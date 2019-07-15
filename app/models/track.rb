@@ -4,12 +4,12 @@ class Track < ApplicationRecord
   validates :name, presence: true
 
   class << self
-    def fetch_new_tracks
+    def fetch_new_tracks(job = nil)
       last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
-      total_pages = fetch_total_pages
-      puts "total pages fetched: #{total_pages}"
+      total_pages = fetch_total_pages job
+      puts_or_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
-        tracks = fetch_tracks page_number
+        tracks = fetch_tracks page_number, job
         break if process_tracks(tracks, last_time) == 'done'
       end
     end
@@ -43,31 +43,31 @@ class Track < ApplicationRecord
       was_already_inserted
     end
 
-    def fetch_total_pages(retry_count = 0)
-      puts 'fetching total pages...'
+    def fetch_total_pages(job, retry_count = 0)
+      puts_or_log 'fetching total pages...', job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], 1, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue NoMethodError
-        warn "\n== Error Fetching Pages =="
-        warn json
-        warn 'Quiting now...'
+        puts_or_log "\n== Error Fetching Pages ==", job, :error
+        puts_or_log json, job, :error
+        puts_or_log 'Quiting now...', job, :error
         exit 1
       rescue JSON::ParserError
-        puts "fetch retry number #{retry_count + 1}"
+        puts_or_log "fetch retry number #{retry_count + 1}", job
         return fetch_total_pages retry_count + 1 if retry_count < 5
 
         raise FetchError, 'unable to fetch number of total pages'
       end
     end
 
-    def fetch_tracks(page_number, retry_count = 0)
-      puts "fetching page #{page_number}"
+    def fetch_tracks(page_number, job, retry_count = 0)
+      puts_or_log "fetching page #{page_number}", job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
       begin
         JSON.parse(json)['recenttracks']['track']
-      rescue JSON::ParserError
-        puts "fetch retry number #{retry_count + 1}"
+      rescue JSON::ParserError, NoMethodError
+        puts_or_log "fetch retry number #{retry_count + 1}", job
         return fetch_tracks page_number, retry_count + 1 if retry_count < 5
 
         raise FetchError, "unable to fetch page number #{page_number}"
@@ -79,6 +79,14 @@ class Track < ApplicationRecord
         ws.audioscrobbler.com
         /2.0/?method=user.getrecenttracks&user=#{user_name}\&api_key=#{api_key}&format=json&page=#{page_number}
       ]
+    end
+
+    def puts_or_log(log, job, severity = :info)
+      if job.nil?
+        puts log
+      else
+        job.log log, severity
+      end
     end
   end
 end
