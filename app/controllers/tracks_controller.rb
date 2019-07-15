@@ -7,6 +7,8 @@ class TracksController < ApplicationController
     @tracks = Track.find_each
   end
 
+  # This should not do this as follows because this will hang.
+  # TODO: Throw into a background job (https://github.com/snood1205/playing_around_with_last_fm/issues/1)
   def fetch_new_tracks
     Track.fetch_new_tracks
   end

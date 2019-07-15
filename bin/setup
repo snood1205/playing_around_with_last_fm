@@ -14,9 +14,16 @@ end
 def check_for_env
   return false unless File.exist? '.env'
 
-  puts "\n== ENV File Exists=="
+  puts "\n== ENV File Exists =="
+  print 'Checking if appropriate values are there...    '
 
-  ENV.key?('USERNAME') && ENV.key?('API_KEY')
+  if ENV.key?('USERNAME') && ENV.key?('API_KEY')
+    puts ?✅
+    true
+  else
+    puts ?❌
+    false
+  end
 end
 
 FileUtils.chdir APP_ROOT do
@@ -39,7 +46,7 @@ FileUtils.chdir APP_ROOT do
 
   unless check_for_env
 
-    puts "\n==Getting last.fm information=="
+    puts "\n== Getting last.fm information =="
     print 'Input your last.fm username: '
     username = gets.chomp
     File.open '.env', ?a do |file|
