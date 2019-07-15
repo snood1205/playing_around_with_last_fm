@@ -7,7 +7,8 @@ class JobsController < ApplicationController
   end
 
   def show
-    @job = Job.find_by(id: params[:id]) || Job.find_by(jid: params[:id])
+    @id = params[:id]
+    @job = Job.find_by(id: @id) || Job.find_by(jid: @id)
     @logs = @job&.job_logs || []
   end
 end
