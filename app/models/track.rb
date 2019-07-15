@@ -24,8 +24,8 @@ class Track < ApplicationRecord
     end
 
     def create_track(track_hash, last_time)
-      artist = track_hash['artist']['#track']
-      album = track_hash['album']['#track']
+      artist = track_hash['artist']['#text']
+      album = track_hash['album']['#text']
       name = track_hash['name']
       if track_hash.key? 'date'
         listened_at = DateTime.parse track_hash['date']['#text']
