@@ -1,11 +1,13 @@
-<meta http-equiv="Refresh" content="5">
-<script>
-    setTimeout(scrollToBottom, 1000);
+<% unless @job.completed? %>
+  <meta http-equiv="Refresh" content="5">
+  <script>
+      setTimeout(scrollToBottom, 1000);
 
-    function scrollToBottom() {
-        window.scrollTo(0, document.body.scrollHeight);
-    }
-</script>
+      function scrollToBottom() {
+          window.scrollTo(0, document.body.scrollHeight);
+      }
+  </script>
+<% end %>
 <h3>Job <code><%= @id %></code> Logs</h3>
 <small>Status: <code><%= @job.completed? ? 'Completed' : 'Processing' %></code></small>
 
