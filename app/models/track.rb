@@ -16,6 +16,7 @@ class Track < ApplicationRecord
     #
     # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
     def fetch_new_tracks(job = nil)
+      @track_count = 0
       Status.start_importing
       last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
       total_pages = fetch_total_pages job
@@ -26,6 +27,7 @@ class Track < ApplicationRecord
       end
     ensure
       Status.end_importing
+      @track_count
     end
 
     private
@@ -81,7 +83,10 @@ class Track < ApplicationRecord
         listened_at = DateTime.now
       end
       was_already_inserted = listened_at <= last_time
-      Track.create artist: artist, album: album, name: name, listened_at: listened_at unless was_already_inserted
+      unless was_already_inserted
+        @track_count += 1
+        Track.create artist: artist, album: album, name: name, listened_at: listened_at
+      end
       !was_already_inserted
     end
 
