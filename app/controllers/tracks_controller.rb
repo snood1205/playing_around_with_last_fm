@@ -4,9 +4,12 @@
 class TracksController < ApplicationController
   VALID_BY_ACTIONS = %i[artist album name].freeze
 
+  before_action :set_page_number, except: :fetch_new_tracks
+
   def index
-    @tracks = Track.all
+    @tracks = Track.page(@page_number).per 100
     @actions = VALID_BY_ACTIONS
+    set_page_ranges
   end
 
   # This should not do this as follows because this will hang.
@@ -22,10 +25,28 @@ class TracksController < ApplicationController
       return super unless @action.all? { |attr| VALID_BY_ACTIONS.include? attr }
 
       # This is formatted as such {actions => count}
-      @tracks = Track.unscoped.group(*@action).count.sort_by { |_, v| -v }
+      track_array = Track.unscoped.group(*@action).count.sort_by { |_, v| -v }
+      @tracks = Kaminari.paginate_array(track_array).page(@page_number).per 100
+      set_page_ranges
       render :count
     else
       super
     end
+  end
+
+  private
+
+  def track_params
+    params.permit(:page_number)
+  end
+
+  def set_page_number
+    @page_number = track_params[:page_number]&.to_i || 1
+  end
+
+  def set_page_ranges
+    @last_page = @tracks.total_pages
+    @prev_pages = @page_number.pred.downto([@page_number - 4, 2].max).to_a.reverse
+    @next_pages = @page_number.succ..([@page_number + 4, @last_page.pred].min)
   end
 end

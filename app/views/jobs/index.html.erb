@@ -1,9 +1,11 @@
-<table>
+<h1>Jobs</h1>
+<table class="table">
   <tr>
-    <th>ID</th>
-    <th>JID</th>
-    <th>Name</th>
-    <th>Started At</th>
+    <th scope="col">ID</th>
+    <th scope="col">JID</th>
+    <th scope="col">Name</th>
+    <th scope="col">Started At</th>
+    <th scope="col">Completed?</th>
   </tr>
   <% @jobs.each do |job| %>
     <tr>
@@ -11,6 +13,7 @@
       <td><%= job.jid %></td>
       <td><%= job.name %></td>
       <td><%= job.started_at %></td>
+      <td><%= job.completed? ? ?✅ : ?❌ %></td>
     </tr>
   <% end %>
 </table>
