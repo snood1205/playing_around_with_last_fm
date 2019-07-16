@@ -60,7 +60,9 @@ class Track < ApplicationRecord
     #         '#text' => String
     #       },
     #       'name' => String,
-    #       'date' => DateTime # can be nil
+    #       'date' => {
+    #         'uts' => String # converted to int
+    #       }
     #     }
     #
     # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
@@ -74,7 +76,7 @@ class Track < ApplicationRecord
       album = track_hash['album']['#text']
       name = track_hash['name']
       if track_hash.key? 'date'
-        listened_at = DateTime.parse track_hash['date']['#text']
+        listened_at = Time.at(track_hash['date']['uts'].to_i).utc.to_datetime
       else
         # This might be _slightly_ inaccurate, but if the listened_at provided from last.fm is nil then it means the
         # song is currently being listened to. Alternatively, we could potentially decide to not store these or store as
