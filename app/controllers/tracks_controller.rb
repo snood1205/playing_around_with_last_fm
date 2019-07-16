@@ -7,6 +7,7 @@ class TracksController < ApplicationController
   before_action :set_page_number, except: :fetch_new_tracks
 
   def index
+    @username = ENV['USERNAME']
     @tracks = Track.page(@page_number).per 100
     @actions = VALID_BY_ACTIONS
     set_page_ranges
