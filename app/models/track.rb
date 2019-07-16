@@ -27,7 +27,7 @@ class Track < ApplicationRecord
       end
     ensure
       Status.end_importing
-      @track_count
+      return @track_count
     end
 
     private
