@@ -9,7 +9,7 @@
   </tr>
   <% @jobs.each do |job| %>
     <tr>
-      <td><%= link_to job.id, job_path(job.id) %></td>
+      <th scope="row"><%= link_to job.id, job_path(job.id) %></th>
       <td><%= job.jid %></td>
       <td><%= job.name %></td>
       <td><%= job.started_at %></td>
