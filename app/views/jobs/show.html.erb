@@ -41,7 +41,7 @@
     <th scope="col">Message</th>
   </tr>
   <% @logs.each do |log| %>
-    <tr class="<%= (log.warn? && 'table-warning') || (log.error? && 'table-error') %>">
+    <tr class="<%= (log.warn? && 'table-warning') || (log.error? && 'table-danger') %>">
       <td><%= log.created_at %></td>
       <td><code><%= log.severity.upcase %></code></td>
       <td><%= log.message %></td>
