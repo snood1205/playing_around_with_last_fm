@@ -6,10 +6,10 @@ class TracksController < ApplicationController
 
   def index
     @tracks = Track.all
+    @actions = VALID_BY_ACTIONS
   end
 
   # This should not do this as follows because this will hang.
-  # TODO: Throw into a background job (https://github.com/snood1205/playing_around_with_last_fm/issues/1)
   def fetch_new_tracks
     jid = FetchNewTracksWorker.perform_async
     redirect_to job_path jid

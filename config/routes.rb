@@ -17,5 +17,5 @@ Rails.application.routes.draw do
   resources :jobs
   resource :jobs
 
-  root 'tracks#by_artist_and_album_and_name'
+  root 'tracks#index'
 end
