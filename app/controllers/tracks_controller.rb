@@ -22,7 +22,7 @@ class TracksController < ApplicationController
       return super unless @action.all? { |attr| VALID_BY_ACTIONS.include? attr }
 
       # This is formatted as such {actions => count}
-      @tracks = Track.group(*@action).count.sort_by { |_, v| -v }
+      @tracks = Track.unscoped.group(*@action).count.sort_by { |_, v| -v }
       render :count
     else
       super
