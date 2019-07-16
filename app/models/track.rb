@@ -11,6 +11,8 @@
 class Track < ApplicationRecord
   validates :name, presence: true
 
+  default_scope -> { order(listened_at: :desc) }
+
   class << self
     # Fetchs all new tracks from last.fm by using the API
     #
