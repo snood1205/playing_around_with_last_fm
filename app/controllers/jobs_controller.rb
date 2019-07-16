@@ -9,6 +9,6 @@ class JobsController < ApplicationController
   def show
     @id = params[:id]
     @job = Job.find_by(id: @id) || Job.find_by(jid: @id)
-    @logs = @job&.job_logs || []
+    @logs = @job&.job_logs.reverse || []
   end
 end

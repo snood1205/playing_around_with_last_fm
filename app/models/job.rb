@@ -6,4 +6,8 @@ class Job < ApplicationRecord
   def log(text, severity = :info)
     JobLog.create job: self, message: text, severity: severity
   end
+
+  def mark_as_completed
+    update completed: true
+  end
 end
