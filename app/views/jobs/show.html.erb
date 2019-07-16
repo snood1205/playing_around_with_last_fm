@@ -1,4 +1,4 @@
-<% unless @job.completed? %>
+<% unless @job&.completed? %>
   <meta http-equiv="Refresh" content="5">
   <script>
       setTimeout(scrollToBottom, 1000);
@@ -9,7 +9,7 @@
   </script>
 <% end %>
 <h3>Job <code><%= @id %></code> Logs</h3>
-<small>Status: <code><%= @job.completed? ? 'Completed' : 'Processing' %></code></small>
+<small>Status: <code><%= @job&.completed? ? 'Completed' : 'Processing' %></code></small>
 
 <table class="table">
   <tr>
@@ -18,15 +18,15 @@
   </tr>
   <tr>
     <td><code>Info</code></td>
-    <td><%= @logs.info.count %></td>
+    <td><%= @logs.info.count rescue 0 %></td>
   </tr>
   <tr class="table-warning">
     <td><code>Warn</code></td>
-    <td><%= @logs.warn.count %></td>
+    <td><%= @logs.warn.count rescue 0 %></td>
   </tr>
   <tr class="table-danger">
     <td><code>Error</code></td>
-    <td><%= @logs.error.count %></td>
+    <td><%= @logs.error.count rescue 0 %></td>
   </tr>
   <tr>
     <th scope="col">Total:</th>
