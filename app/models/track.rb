@@ -106,7 +106,7 @@ class Track < ApplicationRecord
       begin
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue JSON::ParserError, NoMethodError
-        puts_with_log "fetch retry number #{retry_count + 1}", :warn
+        puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
         return fetch_total_pages retry_count + 1 if retry_count < 5
 
         raise FetchError, 'unable to fetch number of total pages'
@@ -126,7 +126,7 @@ class Track < ApplicationRecord
       begin
         JSON.parse(json)['recenttracks']['track']
       rescue JSON::ParserError, NoMethodError
-        puts_with_log "fetch retry number #{retry_count + 1}", job
+        puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
         return fetch_tracks page_number, job, retry_count + 1 if retry_count < 5
 
         raise FetchError, "unable to fetch page number #{page_number}"
