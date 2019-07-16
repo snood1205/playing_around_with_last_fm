@@ -11,6 +11,29 @@
 <h3>Job <code><%= @id %></code> Logs</h3>
 <small>Status: <code><%= @job.completed? ? 'Completed' : 'Processing' %></code></small>
 
+<table class="table">
+  <tr>
+    <th scope="col">Status</th>
+    <th scope="col">Count</th>
+  </tr>
+  <tr>
+    <td><code>Info</code></td>
+    <td><%= @logs.info.count %></td>
+  </tr>
+  <tr class="table-warning">
+    <td><code>Warn</code></td>
+    <td><%= @logs.warn.count %></td>
+  </tr>
+  <tr class="table-danger">
+    <td><code>Error</code></td>
+    <td><%= @logs.error.count %></td>
+  </tr>
+  <tr>
+    <th scope="col">Total:</th>
+    <th scope="col"><%= @logs.count %></th>
+  </tr>
+</table>
+
 <table class="table table-striped">
   <tr>
     <th scope="col">Recorded At</th>
