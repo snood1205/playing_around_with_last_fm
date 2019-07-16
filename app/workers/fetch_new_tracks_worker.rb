@@ -8,5 +8,6 @@ class FetchNewTracksWorker
   def perform
     job = Job.create name: self.class.to_s, started_at: DateTime.now, jid: jid
     Track.fetch_new_tracks job
+    job.log 'Job completed!'
   end
 end
