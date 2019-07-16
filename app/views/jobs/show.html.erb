@@ -11,14 +11,14 @@
 <h3>Job <code><%= @id %></code> Logs</h3>
 <small>Status: <code><%= @job.completed? ? 'Completed' : 'Processing' %></code></small>
 
-<table class="table">
+<table class="table table-striped">
   <tr>
     <th scope="col">Recorded At</th>
     <th scope="col">Severity</th>
     <th scope="col">Message</th>
   </tr>
   <% @logs.each do |log| %>
-    <tr>
+    <tr class="<%= (log.warn? && 'table-warning') || (log.error? && 'table-error') %>">
       <td><%= log.created_at %></td>
       <td><code><%= log.severity.upcase %></code></td>
       <td><%= log.message %></td>
