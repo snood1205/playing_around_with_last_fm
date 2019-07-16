@@ -3,6 +3,8 @@
 
 This is a project to make a rails project to mess around with my last.fm data. You can pull from the last.fm API to update regularly. This is going to be experimenting with some cool ways to display the data.
 
+You can visit a working example with my username at https://playing-around-with-last-fm.herokuapp.com.
+
 ## Getting Started
 Assuming you already have ruby, postgres, and bundle installed just run the following commands to get everything all set-up (if you have trouble installing rails look into how to install nokogiri).
 Steps:
