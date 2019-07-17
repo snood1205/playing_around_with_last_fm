@@ -15,6 +15,7 @@
   <% if Status.importing? %>
     <h6>Note: current importing so data might not be accurate</h6>
   <% end %>
+  <%= render 'layouts/navbar' %>
   <%= yield %>
   <footer>
     Copyright &copy; Eli Sadoff 2019 – <span id="year"></span><br>
