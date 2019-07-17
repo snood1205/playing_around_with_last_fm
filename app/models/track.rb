@@ -12,6 +12,7 @@ class Track < ApplicationRecord
   validates :name, presence: true
 
   default_scope -> { order(listened_at: :desc) }
+  scope :without_blank_album, -> { where.not(album: '') }
 
   class << self
     # Fetchs all new tracks from last.fm by using the API
