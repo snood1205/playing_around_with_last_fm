@@ -27,7 +27,7 @@ class TracksController < ApplicationController
     @time = params[:time] if VALID_TIME_PERIODS.include? params[:time]&.downcase
     @time ||= 'week'
     @amount_of_time = params[:length]&.to_i || 1
-    @top_count = params[:count]&.to_s || 10
+    @top_count = params[:count]&.to_i || 10
     @attrs = VALID_BY_ACTIONS
     @tracks = Track.unscoped.where(listened_at: @amount_of_time.send(@time).ago..DateTime.now)
   end
