@@ -12,11 +12,9 @@ module ApplicationHelper
   end
 
   def navbar_link_item(contents, path, li_class: 'nav-item', anchor_class: 'nav-link')
-    active_class = current_page?(path) ? 'active' : '' if path
+    li_options = set_active_class path, class: li_class
 
-    li_class = [li_class, active_class].compact
-
-    content_tag :li, class: li_class do
+    content_tag :li, li_options do
       link_to contents, path, class: anchor_class
     end
   end
@@ -25,16 +23,20 @@ module ApplicationHelper
     content_tag :span, contents, html_options
   end
 
+  def append_class_to_html_options(html_options, class_to_append)
+    html_options[:class] = [html_options[:class]].flatten
+    html_options[:class] << class_to_append
+    html_options[:class].compact!
+
+    html_options
+  end
+
   private
 
   def set_active_class(path, html_options)
     active_class = path == request.original_fullpath ? 'active' : nil
 
-    html_options[:class] = [html_options[:class]].flatten
-    html_options[:class] << active_class
-    html_options[:class].compact!
-
-    html_options
+    append_class_to_html_options html_options, active_class
   end
 
 end
