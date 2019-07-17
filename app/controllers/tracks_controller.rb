@@ -24,7 +24,7 @@ class TracksController < ApplicationController
   end
 
   def clear_all_tracks
-    jid = FetchNewTracksWorker.perform_async
+    jid = DeleteAllTracksWorker.perform_async
     redirect_to job_path jid
   end
 

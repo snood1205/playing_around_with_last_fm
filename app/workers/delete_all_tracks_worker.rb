@@ -9,5 +9,6 @@ class DeleteAllTracksWorker
     tracks_deleted = Track.delete_all
     job.log 'All tracks deleted!'
     job.log "Track count: #{tracks_deleted}"
+    job.mark_as_completed
   end
 end
