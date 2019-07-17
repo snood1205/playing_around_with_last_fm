@@ -1,0 +1,16 @@
+<div class="jumbotron">
+  <h1><%= @method.titleize %>: <%= @title %></h1>
+  <h3>Count: <%= @count %></h3>
+  <table class="table">
+    <tr>
+      <th scope="col">Attribute</th>
+      <th scope="col">Value(s)</th>
+    </tr>
+    <% @attributes_minus_method.each do |attr| %>
+      <tr>
+        <td class="row"><%= attr.titleize %></td>
+        <td><%= instance_variable_get :"@#{attr}" %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>

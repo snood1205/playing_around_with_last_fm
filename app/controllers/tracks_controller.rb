@@ -48,6 +48,16 @@ class TracksController < ApplicationController
       @tracks = Kaminari.paginate_array(track_array).page(@page_number).per 100
       set_page_ranges
       render :count
+    elsif VALID_BY_ACTIONS.include? method.to_sym
+      @title = params[:track_id]
+      tracks = Track.where(method => @title)
+      VALID_BY_ACTIONS.each do |attr|
+        instance_variable_set :"@#{attr}", tracks.pluck(attr).uniq.sort
+      end
+      @method = method
+      @attributes_minus_method = VALID_BY_ACTIONS - [method.to_sym]
+      @count = tracks.count
+      render :individual_total
     else
       super
     end
