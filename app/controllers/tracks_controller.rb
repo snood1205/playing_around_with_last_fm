@@ -39,7 +39,12 @@ class TracksController < ApplicationController
       return super unless @action.all? { |attr| VALID_BY_ACTIONS.include? attr }
 
       # This is formatted as such {actions => count}
-      track_array = Track.unscoped.group(*@action).count.sort_by { |_, v| -v }
+      scoped_tracks = if @action == %i[album]
+                        Track.unscoped.without_blank_album
+                      else
+                        Track.unscoped
+                      end
+      track_array = scoped_tracks.group(*@action).count.sort_by { |_, v| -v }
       @tracks = Kaminari.paginate_array(track_array).page(@page_number).per 100
       set_page_ranges
       render :count
