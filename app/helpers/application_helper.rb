@@ -38,6 +38,4 @@ module ApplicationHelper
 
     append_class_to_html_options html_options, active_class
   end
-
 end
-

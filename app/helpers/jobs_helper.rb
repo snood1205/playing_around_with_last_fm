@@ -14,6 +14,8 @@ module JobsHelper
                 'table-warning'
               when 'error'
                 'table-danger'
+              else
+                ''
               end
             end
 
