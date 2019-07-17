@@ -1,14 +1,12 @@
 <nav class="navbar navbar-light navbar-expand-sm bg-light">
   <%= navbar_anchor 'All Tracks', ?/, class: 'navbar-brand' %>
-  <span class="navbar-text">
-    Tracks by:
-  </span>
+  <%= navbar_text 'Tracks by:' %>
   <ul class="navbar-nav">
     <% (1..track_by_actions.size).each do |size| %>
       <% track_by_actions.combination(size).each do |attrs| %>
-        <%= navbar_item " #{attrs.join ', '} ", "/tracks/by_#{attrs.join '_and_'}",
-                        li_class: 'nav-item', a_class: 'nav-link' %>
+        <%= navbar_link_item "#{attrs.join ', '}", "/tracks/by_#{attrs.join '_and_'}" %>
       <% end %>
     <% end %>
+    <%= navbar_link_item 'jobs', '/jobs' %>
   </ul>
 </nav>

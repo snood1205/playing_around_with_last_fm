@@ -11,14 +11,18 @@ module ApplicationHelper
     link_to contents, path, html_options
   end
 
-  def navbar_item(contents, path, tag: :li, li_class: 'nav-item', a_class: 'nav-link')
-    active_class = current_page?(path) ? 'active' : ''
+  def navbar_link_item(contents, path, li_class: 'nav-item', anchor_class: 'nav-link')
+    active_class = current_page?(path) ? 'active' : '' if path
 
     li_class = [li_class, active_class].compact
 
     content_tag :li, class: li_class do
-      link_to contents, path, class: a_class
+      link_to contents, path, class: anchor_class
     end
+  end
+
+  def navbar_text(contents, html_options = {})
+    content_tag :span, contents, html_options
   end
 
   private
@@ -32,5 +36,6 @@ module ApplicationHelper
 
     html_options
   end
+
 end
 
