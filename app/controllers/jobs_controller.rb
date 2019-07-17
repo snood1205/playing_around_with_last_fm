@@ -1,14 +1,21 @@
 # frozen_string_literal: true
 
 class JobsController < ApplicationController
+  include JobsHelper
 
   def index
     @jobs = Job.all
   end
 
   def show
+    @display_level = params[:display]&.downcase
+    @display_level = nil unless JobLog.severities.keys.include? @display_level
     @job = Job.find_by(jid: params[:id]) || Job.find_by(id: params[:id])
     @id = @job&.jid || (params[:id].length > 10 && params[:id]) || @job&.id || params[:id]
-    @logs = @job&.job_logs || []
+    @logs = if @display_level.nil?
+              @job&.job_logs || []
+            else
+              @job&.job_logs&.send @display_level
+            end
   end
 end
