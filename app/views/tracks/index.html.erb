@@ -1,21 +1,6 @@
 <div class="container">
   <h1>Songs played by <%= link_to @username, "https://www.last.fm/user/#@username" %></h1>
 </div>
-<div class="jumboton">
-  View tracks sorted<br/>
-  <% (1..@actions.size).each do |size| %>
-    <div class="row">
-      <div class="col">
-        by <%= pluralize size, 'attribute' %>:
-      </div>
-      <% @actions.combination(size).each do |attrs| %>
-        <div class="col">
-          <%= link_to "By #{attrs.join ', '}", "/tracks/by_#{attrs.join '_and_'}" %>
-        </div>
-      <% end %>
-    </div>
-  <% end %>
-</div>
 <%= render 'pagination' %>
 <table class="table table-striped">
   <tr>

@@ -3,6 +3,7 @@
 # Controls actions to be taken on tracks
 class TracksController < ApplicationController
   VALID_BY_ACTIONS = %i[artist album name].freeze
+  PAGE_SPREAD = 4
 
   before_action :set_page_number, except: :fetch_new_tracks
 
@@ -47,7 +48,7 @@ class TracksController < ApplicationController
 
   def set_page_ranges
     @last_page = @tracks.total_pages
-    @prev_pages = @page_number.pred.downto([@page_number - 4, 2].max).to_a.reverse
-    @next_pages = @page_number.succ..([@page_number + 4, @last_page.pred].min)
+    @prev_pages = @page_number.pred.downto([@page_number - PAGE_SPREAD, 2].max).to_a.reverse
+    @next_pages = @page_number.succ..([@page_number + PAGE_SPREAD, @last_page.pred].min)
   end
 end
