@@ -1,0 +1,7 @@
+<table class="table">
+  <tr>
+    <th scope="col"><%= attribute.to_s.titleize %></th>
+    <th scope="col">Count</th>
+  </tr>
+  <%= top_tag @tracks, attribute, @top_count %>
+</table>

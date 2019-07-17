@@ -5,9 +5,10 @@ class TracksController < ApplicationController
   include TracksHelper
 
   VALID_BY_ACTIONS = %i[artist album name].freeze
+  VALID_TIME_PERIODS = %w[week day month year].freeze
   PAGE_SPREAD = 4
 
-  before_action :set_page_number, except: :fetch_new_tracks
+  before_action :set_page_number, except: %i[fetch_new_tracks report]
 
   def index
     @username = ENV['USERNAME']
@@ -20,6 +21,15 @@ class TracksController < ApplicationController
   def fetch_new_tracks
     jid = FetchNewTracksWorker.perform_async
     redirect_to job_path jid
+  end
+
+  def report
+    @time = params[:time] if VALID_TIME_PERIODS.include? params[:time]&.downcase
+    @time ||= 'week'
+    @amount_of_time = params[:length]&.to_i || 1
+    @top_count = params[:count]&.to_s || 10
+    @attrs = VALID_BY_ACTIONS
+    @tracks = Track.unscoped.where(listened_at: @amount_of_time.send(@time).ago..DateTime.now)
   end
 
   def action_missing(method)
