@@ -16,6 +16,7 @@ Rails.application.routes.draw do
 
     get :report
     get :fetch_new_tracks
+    get :clear_all_tracks
   end
 
   resources :jobs do

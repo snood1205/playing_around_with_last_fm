@@ -23,6 +23,11 @@ class TracksController < ApplicationController
     redirect_to job_path jid
   end
 
+  def clear_all_tracks
+    jid = FetchNewTracksWorker.perform_async
+    redirect_to job_path jid
+  end
+
   def report
     @time = params[:time] if VALID_TIME_PERIODS.include? params[:time]&.downcase
     @time ||= 'week'
