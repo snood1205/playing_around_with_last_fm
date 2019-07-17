@@ -31,6 +31,13 @@ module TracksHelper
     end.inject(:+)
   end
 
+  def total_tag(tracks, attribute)
+    content_tag :tr do
+      content_tag(:th, "Total Unique Songs by #{attribute.to_s.titleize}") +
+        content_tag(:th, tracks.distinct.pluck(attribute).count)
+    end
+  end
+
   private
 
   def set_disabled_class(page, current_page, last_page, html_options)
