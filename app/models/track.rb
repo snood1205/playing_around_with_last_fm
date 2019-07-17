@@ -27,9 +27,9 @@ class Track < ApplicationRecord
         tracks = fetch_tracks page_number, job
         break unless process_tracks(tracks, last_time, page_number)
       end
+      @track_count
     ensure
       Status.end_importing
-      return @track_count
     end
 
     private
@@ -37,7 +37,7 @@ class Track < ApplicationRecord
     # Processes track array (normally 50 tracks) and creates track based on information parsed out from
     # the JSON data retrieved from the API.
     #
-    # @param tracks [Hash[]] an array of hashes of track information parsed out from the API.
+    # @param tracks [Array<Hash>] an array of hashes of track information parsed out from the API.
     # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
     #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
     # @param page_number [Integer] the page number from which we are parsing tracks. Used to check against inserting
@@ -107,7 +107,7 @@ class Track < ApplicationRecord
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue JSON::ParserError, NoMethodError
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
-        return fetch_total_pages retry_count + 1 if retry_count < 5
+        return fetch_total_pages job, retry_count + 1 if retry_count < 5
 
         raise FetchError, 'unable to fetch number of total pages'
       end
@@ -119,7 +119,7 @@ class Track < ApplicationRecord
     # @param job [Job] the job to log to.
     # @param retry_count [Integer] the retry attempt number (defaults to 0).
     #
-    # @return [Hash[]] an array of hashes of the tracks.
+    # @return [Array<Hash>] an array of hashes of the tracks.
     def fetch_tracks(page_number, job, retry_count = 0)
       puts_with_log "fetching page #{page_number}", job
       json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
@@ -140,7 +140,7 @@ class Track < ApplicationRecord
     # @param page_number [Integer] the page number to request
     # @param username [String] the last.fm username whose scrobbles you want to fetch.
     #
-    # @return [String[]] the array to construct the URL for `Net::HTTP.get`
+    # @return [Array<String>] the array to construct the URL for `Net::HTTP.get`
     def generate_url(api_key, page_number, username)
       %W[
         ws.audioscrobbler.com

@@ -13,6 +13,8 @@ module TracksHelper
                      construct_page_number page
                    end
 
+    return if (number && number <= 0) || (page == 'Next' && last_page < 2)
+
     li_options = set_disabled_class number, current_page, last_page, class: li_class
 
     content_tag :li, li_options do
