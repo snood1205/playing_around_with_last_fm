@@ -1,0 +1,17 @@
+<nav class="navbar navbar-expand-sm bg-light">
+  <a href="/" class="navbar-brand">All Tracks</a>
+  <span class="navbar-text">
+    Tracks by:
+  </span>
+  <ul class="navbar-nav">
+    <% (1..track_by_actions.size).each do |size| %>
+      <% track_by_actions.combination(size).each do |attrs| %>
+        <li class="nav-item">
+          &nbsp;
+          <%= link_to "#{attrs.join ', '}", "/tracks/by_#{attrs.join '_and_'}", class: 'nav-link' %>
+          &nbsp;
+        </li>
+      <% end %>
+    <% end %>
+  </ul>
+</nav>
