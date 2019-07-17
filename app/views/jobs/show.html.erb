@@ -1,15 +1,20 @@
-<% unless @job&.completed? %>
-  <meta http-equiv="Refresh" content="5">
-  <script>
-      setTimeout(scrollToBottom, 1000);
+<div class="jumbotron">
+  <% unless @job&.completed? %>
+    <meta http-equiv="Refresh" content="5">
+    <script>
+        setTimeout(scrollToBottom, 1000);
 
-      function scrollToBottom() {
-          window.scrollTo(0, document.body.scrollHeight);
-      }
-  </script>
-<% end %>
-<h3>Job <code><%= @id %></code> <%= @display_level&.titleize %> Logs</h3>
-<small>Status: <code><%= @job&.completed? ? 'Completed' : 'Processing' %></code></small>
+        function scrollToBottom() {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+  <% end %>
+  <h3>Job <code><%= @id %></code> <%= @display_level&.titleize %> Logs</h3>
+  Status: <code><%= @job&.completed? ? 'Completed' : 'Processing' %></code>
+  <% unless @job.completed? %>
+    <%= link_to 'Kill', job_kill_path(@job), class: 'btn btn-danger float-right' %>
+  <% end %>
+</div>
 
 <table class="table">
   <tr>

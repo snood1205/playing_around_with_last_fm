@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'sidekiq/api'
+
 class Job < ApplicationRecord
   has_many :job_logs, dependent: :destroy
 
@@ -11,5 +13,10 @@ class Job < ApplicationRecord
 
   def mark_as_completed
     update completed: true
+  end
+
+  def kill
+    job = Sidekiq::ScheduledSet.new.find_job jid
+    job&.delete
   end
 end

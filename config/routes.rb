@@ -15,7 +15,9 @@ Rails.application.routes.draw do
     get :fetch_new_tracks
   end
 
-  resources :jobs
+  resources :jobs do
+    get :kill
+  end
   resource :jobs
 
   root 'tracks#index'
