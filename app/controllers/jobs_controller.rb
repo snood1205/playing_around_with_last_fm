@@ -18,4 +18,10 @@ class JobsController < ApplicationController
               @job&.job_logs&.send @display_level
             end
   end
+
+  def kill
+    job = Job.find_by id: params[:job_id]
+    flash = job&.kill ? {info: 'Job successfully killed'} : {error: 'Job could not be killed'}
+    redirect_to job_path(job), flash: flash
+  end
 end
