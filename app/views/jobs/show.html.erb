@@ -8,7 +8,7 @@
       }
   </script>
 <% end %>
-<h3>Job <code><%= @id %></code> Logs</h3>
+<h3>Job <code><%= @id %></code> <%= @display_level&.titleize %> Logs</h3>
 <small>Status: <code><%= @job&.completed? ? 'Completed' : 'Processing' %></code></small>
 
 <table class="table">
@@ -16,22 +16,24 @@
     <th scope="col">Status</th>
     <th scope="col">Count</th>
   </tr>
-  <tr>
-    <td><code>Info</code></td>
-    <td><%= @logs.info.count rescue 0 %></td>
-  </tr>
-  <tr class="table-warning">
-    <td><code>Warn</code></td>
-    <td><%= @logs.warn.count rescue 0 %></td>
-  </tr>
-  <tr class="table-danger">
-    <td><code>Error</code></td>
-    <td><%= @logs.error.count rescue 0 %></td>
-  </tr>
-  <tr>
-    <th scope="col">Total:</th>
+  <% if @display_level.nil? %>
+    <tr>
+      <td><a href="?display=info"><code>Info</code></a></td>
+      <td><%= @logs.info.count rescue 0 %></td>
+    </tr>
+    <%= log_table_row 'warn' do %>
+      <td><a href="?display=warn"><code>Warn</code></a></td>
+      <td><%= @logs.warn.count rescue 0 %></td>
+    <% end %>
+    <%= log_table_row 'error' do %>
+      <td><a href="?display=error"><code>Error</code></a></td>
+      <td><%= @logs.error.count rescue 0 %></td>
+    <% end %>
+  <% end %>
+  <%= log_table_row @display_level do %>
+    <th scope="col" class=""><%= @display_level.nil? ? 'Total' : @display_level.titleize %></th>
     <th scope="col"><%= @logs.count %></th>
-  </tr>
+  <% end %>
 </table>
 
 <table class="table table-striped">
@@ -41,12 +43,16 @@
     <th scope="col">Message</th>
   </tr>
   <% @logs.each do |log| %>
-    <tr class="<%= (log.warn? && 'table-warning') || (log.error? && 'table-danger') %>">
+    <%= log_table_row log do %>
       <td><%= log.created_at %></td>
       <td><code><%= log.severity.upcase %></code></td>
       <td><%= log.message %></td>
-    </tr>
+      </tr>
+    <% end %>
   <% end %>
 </table>
-<a href="/" class="btn">Go Back Home</a>
-<a href="/jobs" class="btn">View All Jobs</a>
+<a href="/" class="btn btn-primary">Go Back Home</a>
+<a href="/jobs" class="btn btn-primary">View All Jobs</a>
+<% unless @display_level.nil? %>
+  <a href="?" class="btn btn-primary">View All Logs</a>
+<% end %>
