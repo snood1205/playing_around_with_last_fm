@@ -8,7 +8,7 @@
     </tr>
     <% @attributes_minus_method.each do |attr| %>
       <tr>
-        <td class="row"><%= attr.titleize %></td>
+        <td class="row"><%= attr.to_s.titleize %></td>
         <td><%= instance_variable_get :"@#{attr}" %></td>
       </tr>
     <% end %>
