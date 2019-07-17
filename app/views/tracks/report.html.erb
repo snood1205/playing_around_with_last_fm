@@ -1,0 +1,7 @@
+<h2>Report from past <%= pluralize @amount_of_time, @time %></h2>
+<% @attrs.each do |attr| %>
+  <div class="jumbotron">
+    <h3>Top <%= attr.to_s.pluralize.titleize %></h3>
+    <%= render 'top', attribute: attr %>
+  </div>
+<% end %>

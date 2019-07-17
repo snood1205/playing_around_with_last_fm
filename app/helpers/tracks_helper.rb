@@ -22,6 +22,14 @@ module TracksHelper
     end
   end
 
+  def top_tag(tracks, attribute, count)
+    tracks.group(attribute).count.sort_by { |_, v| -v }.first(count).map do |attr, count|
+      content_tag :tr do
+        content_tag(:td, attr) + content_tag(:td, count)
+      end
+    end.inject(:+)
+  end
+
   private
 
   def set_disabled_class(page, current_page, last_page, html_options)
