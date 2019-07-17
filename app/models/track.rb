@@ -59,10 +59,17 @@ class Track < ApplicationRecord
     #       'album' => {
     #         '#text' => String
     #       },
-    #       'name' => String,
+    #       'image' => [
+    #         {
+    #             'size' => 'extralarge', # other sizes appear but we want to store the url for the extra large image.
+    #             '#text' => String # this is the url
+    #         }
+    #       ]
     #       'date' => {
     #         'uts' => String # converted to int
-    #       }
+    #       },
+    #       'url' => String,
+    #       'name' => String
     #     }
     #
     # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
@@ -74,7 +81,9 @@ class Track < ApplicationRecord
     def create_track(track_hash, last_time, page_number)
       artist = track_hash['artist']['#text']
       album = track_hash['album']['#text']
+      image_url = track_hash['image'].last['#text']
       name = track_hash['name']
+      url = track_hash['url']
       if track_hash.key? 'date'
         listened_at = Time.at(track_hash['date']['uts'].to_i).utc.to_datetime
       else
@@ -89,7 +98,7 @@ class Track < ApplicationRecord
       was_already_inserted = listened_at <= last_time
       unless was_already_inserted
         @track_count += 1
-        Track.create artist: artist, album: album, name: name, listened_at: listened_at
+        Track.create artist: artist, album: album, name: name, listened_at: listened_at, url: url, image_url: image_url
       end
       !was_already_inserted
     end
