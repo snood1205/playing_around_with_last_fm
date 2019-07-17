@@ -85,17 +85,12 @@ class Track < ApplicationRecord
       image_url = track_hash['image'].last['#text']
       name = track_hash['name']
       url = track_hash['url']
-      if track_hash.key? 'date'
-        listened_at = Time.at(track_hash['date']['uts'].to_i).utc.to_datetime
-      else
-        # This might be _slightly_ inaccurate, but if the listened_at provided from last.fm is nil then it means the
-        # song is currently being listened to. Alternatively, we could potentially decide to not store these or store as
-        # nil. The issue with storing these with nil is if the song is currently playing but does not hit the scrobble
-        # threshold (it is set variably from 50%-100% of the track) then it could end up storing a track that was not
-        return true unless page_number == 1 # Do not insert song on each page
+      # After careful consideration, we can just wait to import the song that's currently playing until after it's
+      # done playing. This isn't a serious issue and the solution before led to double insertions at times and incorrect
+      # listened_at at times. This is a more conservative and "truthful" solution.
+      return true unless track_hash.key? 'date'
 
-        listened_at = DateTime.now
-      end
+      listened_at = Time.at(track_hash['date']['uts'].to_i).utc.to_datetime
       was_already_inserted = listened_at <= last_time
       unless was_already_inserted
         @track_count += 1
