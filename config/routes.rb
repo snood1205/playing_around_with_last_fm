@@ -3,9 +3,6 @@
 Rails.application.routes.draw do
   attributes = %w[artist name album]
 
-  resources :tracks, except: :show do
-    attributes.each { |attr| get attr }
-  end
   resource :tracks do
     # Initialize all the by_artist_and_etc endpoints
     (1..attributes.size).each do |size|
@@ -17,6 +14,9 @@ Rails.application.routes.draw do
     get :report
     get :fetch_new_tracks
     get :clear_all_tracks
+  end
+  resources :tracks, except: :show do
+    attributes.each { |attr| get attr, constraints: {track_id: /[\W\w]+/} }
   end
 
   resources :jobs do

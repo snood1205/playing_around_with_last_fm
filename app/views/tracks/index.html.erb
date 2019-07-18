@@ -13,9 +13,9 @@
   <% @tracks.each do |track| %>
     <tr>
       <td><%= link_to image_tag(track.image_url, alt: 'Album Artwork', size: '64x64'), track.image_url %></td>
-      <th scope="row"><%= link_to track.name, track.url %></th>
-      <td><%= track.artist %></td>
-      <td><%= track.album %></td>
+      <th scope="row"><%= link_to track.name, track_name_url(track.name) %>
+      <td><%= link_to track.artist, track_artist_url(track.artist) %>
+      <td><%= link_to track.album, track_album_url(track.album) %>
       <td><%= track.listened_at %></td>
     </tr>
   <% end %>
