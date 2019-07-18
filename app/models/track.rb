@@ -116,6 +116,7 @@ class Track < ApplicationRecord
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
         return fetch_total_pages job, retry_count + 1 if retry_count < 5
 
+        puts_with_log 'unable to fetch number of total pages', :error
         raise FetchError, 'unable to fetch number of total pages'
       end
     end
