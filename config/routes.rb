@@ -3,7 +3,7 @@
 Rails.application.routes.draw do
   attributes = %w[artist name album]
 
-  resource :tracks do
+  resource :tracks, except: :show do
     # Initialize all the by_artist_and_etc endpoints
     (1..attributes.size).each do |size|
       attributes.permutation(size).each do |attrs|
