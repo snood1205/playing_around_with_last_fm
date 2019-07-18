@@ -11,7 +11,7 @@
   <% end %>
   <h3>Job <code><%= @id %></code> <%= @display_level&.titleize %> Logs</h3>
   Status: <code><%= @job&.completed? ? 'Completed' : 'Processing' %></code>
-  <% unless @job&.completed? %>
+  <% unless @job.nil? || @job&.completed? %>
     <%= link_to 'Kill', job_kill_path(@job), class: 'btn btn-danger float-right' %>
   <% end %>
 </div>
