@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  devise_for :users
   attributes = %w[artist name album]
 
   resource :tracks, except: :show do

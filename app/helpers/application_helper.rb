@@ -11,11 +11,11 @@ module ApplicationHelper
     link_to contents, path, html_options
   end
 
-  def navbar_link_item(contents, path, li_class: 'nav-item', anchor_class: 'nav-link')
+  def navbar_link_item(contents, path, li_class: 'nav-item', anchor_class: 'nav-link', http_method: 'GET')
     li_options = set_active_class path, class: li_class
 
     content_tag :li, li_options do
-      link_to contents, path, class: anchor_class
+      link_to contents, path, class: anchor_class, method: http_method
     end
   end
 

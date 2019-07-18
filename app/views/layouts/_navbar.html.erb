@@ -8,5 +8,10 @@
       <% end %>
     <% end %>
     <%= navbar_link_item 'jobs', '/jobs' %>
+    <% if current_user %>
+      <%= navbar_link_item 'Sign Out', destroy_user_session_path, http_method: 'DELETE' %>
+    <% else %>
+      <%= navbar_link_item 'Sign In', new_user_session_path %>
+    <% end %>
   </ul>
 </nav>
