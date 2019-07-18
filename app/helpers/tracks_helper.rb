@@ -22,6 +22,20 @@ module TracksHelper
     end
   end
 
+  def attribute_count_link(track, attribute, html_options = {})
+    value = case track
+            when Track
+              track.send attribute
+            when String
+              track
+            end
+
+    return content_tag :span if value.nil? || value.blank?
+
+    url = send "track_#{attribute}_url", value
+    link_to value, url, html_options
+  end
+
   def top_tag(tracks, attribute, count)
     tracks = tracks.without_blank_album if attribute == :album
     tracks.group(attribute).count.sort_by { |_, v| -v }.first(count).map do |attr, count|
