@@ -9,7 +9,7 @@
     <% @attributes_minus_method.each do |attr| %>
       <tr>
         <td class="row"><%= attr.to_s.titleize %></td>
-        <td><%= instance_variable_get :"@#{attr}" %></td>
+        <td><%= instance_variable_get(:"@#{attr}").fjoin ', ' %></td>
       </tr>
     <% end %>
   </table>
