@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../errors'
+
 # @!attribute name [rw]
 #  @return [String] the name of the track.
 # @!attribute artist [rw]
