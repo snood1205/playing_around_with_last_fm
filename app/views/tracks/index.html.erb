@@ -8,14 +8,17 @@
     <th scope="col">Name</th>
     <th scope="col">Artist</th>
     <th scope="col">Album</th>
+    <th scope="col">Last.fm</th>
     <th scope="col">Listened At</th>
   </tr>
   <% @tracks.each do |track| %>
     <tr>
-      <td><%= link_to image_tag(track.image_url, alt: 'Album Artwork', size: '64x64'), track.image_url %></td>
+      <td><%= link_to image_tag(track.image_url, alt: "Art for #{track.album.blank? ? 'scrobble' : track.album}",
+                                size: '64x64'), track.image_url %></td>
       <th scope="row"><%= attribute_count_link track, 'name' %></th>
       <td><%= attribute_count_link track, 'artist' %></td>
       <td><%= attribute_count_link track, 'album' %></td>
+      <td><%= link_to 'View on last.fm', track.url, class: 'btn btn-info' %></td>
       <td><%= track.listened_at %></td>
     </tr>
   <% end %>
