@@ -13,11 +13,11 @@
     <% @tracks.each do |values, count| %>
       <tr>
         <% if values.is_a? Array %>
-          <% values.each do |value| %>
-            <td><%= value %></td>
+          <% values.zip(@action).each do |value, action| %>
+            <td><%= attribute_count_link value, action %></td>
           <% end %>
         <% else %>
-          <td><%= values %></td>
+          <td><%= attribute_count_link values, @action.first %></td>
         <% end %>
         <td><%= count %></td>
       </tr>
