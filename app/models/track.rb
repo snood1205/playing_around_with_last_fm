@@ -28,7 +28,7 @@ class Track < ApplicationRecord
       puts_with_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
         tracks = fetch_tracks page_number, job
-        break unless process_tracks(tracks, last_time, page_number)
+        break unless process_tracks tracks, last_time
       end
       @track_count
     ensure
@@ -43,11 +43,9 @@ class Track < ApplicationRecord
     # @param tracks [Array<Hash>] an array of hashes of track information parsed out from the API.
     # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
     #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
-    # @param page_number [Integer] the page number from which we are parsing tracks. Used to check against inserting
-    #  the song currently playing on every page.
     # @return [Boolean] returns true if the job should be continued, false otherwise
-    def process_tracks(tracks, last_time, page_number)
-      tracks.all? { |track| create_track track, last_time, page_number }
+    def process_tracks(tracks, last_time)
+      tracks.all? { |track| create_track track, last_time }
     end
 
     # Creates a track from the parsed hash.
@@ -77,11 +75,9 @@ class Track < ApplicationRecord
     #
     # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
     #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
-    # @param page_number [Integer] the page number from which we are parsing tracks. Used to check against inserting
-    #  the song currently playing on every page.
     # @return [Boolean] returns whether or not the tracks should continue being created. This is based on the
     #  listened_at check.
-    def create_track(track_hash, last_time, page_number)
+    def create_track(track_hash, last_time)
       artist = track_hash['artist']['#text']
       album = track_hash['album']['#text']
       image_url = track_hash['image'].last['#text']
