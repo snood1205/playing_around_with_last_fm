@@ -17,3 +17,6 @@ Rails/Output:
 Style/CharacterLiteral:
   Enabled: false
 
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
+
