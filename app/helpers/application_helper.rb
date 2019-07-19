@@ -23,6 +23,11 @@ module ApplicationHelper
     content_tag :span, contents, html_options
   end
 
+  def option_item(contents, selected_item)
+    selected = contents == selected_item
+    content_tag :option, contents, selected: selected
+  end
+
   def append_class_to_html_options(html_options, class_to_append)
     html_options[:class] = [html_options[:class]].flatten
     html_options[:class] << class_to_append

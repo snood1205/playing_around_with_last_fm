@@ -52,6 +52,10 @@ module TracksHelper
     end
   end
 
+  def track_time_periods
+    TracksController::VALID_TIME_PERIODS.map(&:titleize)
+  end
+
   private
 
   def set_disabled_class(page, current_page, last_page, html_options)
