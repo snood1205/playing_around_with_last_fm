@@ -1,5 +1,6 @@
 <nav class="navbar navbar-light navbar-expand-sm bg-light">
   <%= navbar_anchor 'All Tracks', ?/, class: 'navbar-brand' %>
+  <div class="dropdown-divider"></div>
   <%= navbar_text 'Tracks by:' %>
   <ul class="navbar-nav">
     <% (1..track_by_actions.size).each do |size| %>
@@ -7,6 +8,9 @@
         <%= navbar_link_item "#{attrs.join ', '}", "/tracks/by_#{attrs.join '_and_'}" %>
       <% end %>
     <% end %>
-    <%= navbar_link_item 'jobs', '/jobs' %>
+    <%= navbar_link_item ?|, ?# %>
+    <%= navbar_link_item 'reports', report_tracks_path %>
+    <%= navbar_link_item ?|, ?# %>
+    <%= navbar_link_item 'jobs', jobs_path %>
   </ul>
 </nav>
