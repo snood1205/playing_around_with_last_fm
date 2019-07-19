@@ -12,9 +12,8 @@
 
 <body>
 <div class="container">
-  <% if Status.importing? %>
-    <h6>Note: current importing so data might not be accurate</h6>
-  <% end %>
+  <%= render 'layouts/alerts' %>
+  <%= render 'layouts/importing' %>
   <%= render 'layouts/navbar' %>
   <%= yield %>
   <footer>

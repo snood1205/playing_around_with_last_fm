@@ -16,13 +16,12 @@ en:
         password: 'Password'
       user:
         new:
-          email: 'E-mail to sign in.'
+          email: 'Email'
         edit:
-          email: 'E-mail.'
+          email: 'Email'
     hints:
       defaults:
         username: 'User name to sign in.'
-        password: 'No special characters, please.'
     prompts:
       defaults:
         age: 'Select your age'
