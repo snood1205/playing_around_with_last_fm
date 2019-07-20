@@ -17,7 +17,6 @@ class TracksController < ApplicationController
     set_page_ranges
   end
 
-  # This should not do this as follows because this will hang.
   def fetch_new_tracks
     jid = FetchNewTracksWorker.perform_async
     redirect_to job_path jid
@@ -26,6 +25,12 @@ class TracksController < ApplicationController
   def clear_all_tracks
     jid = DeleteAllTracksWorker.perform_async
     redirect_to job_path jid
+  end
+
+  def hide
+    track = Track.find_by id: params[:track_id]
+    track.update(hidden: true)
+    redirect_back fallback_location: root_path, flash: {info: "Track #{track.name} - #{track.artist} hidden"}
   end
 
   def report
