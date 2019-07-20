@@ -11,7 +11,8 @@ module ApplicationHelper
 
   def flash_bootstrap_display(type, html_safe: false)
     btn_class = FLASH_MATCHING[type.to_sym]
-    content_tag :div, flash[type].html_safe, class: ['alert', btn_class]
+    content = html_safe ? flash[type].html_safe : flash[type]
+    content_tag :div, content, class: ['alert', btn_class]
   end
 
   def navbar_anchor(contents, path, html_options = {})
