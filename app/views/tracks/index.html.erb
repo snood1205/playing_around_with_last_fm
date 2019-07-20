@@ -10,6 +10,7 @@
     <th scope="col">Album</th>
     <th scope="col">Last.fm</th>
     <th scope="col">Listened At</th>
+    <th scope="col">Hide</th>
   </tr>
   <% @tracks.each do |track| %>
     <tr>
@@ -20,6 +21,7 @@
       <td><%= attribute_count_link track, 'album' %></td>
       <td><%= link_to 'View on last.fm', track.url, class: 'btn btn-info' %></td>
       <td><%= track.listened_at %></td>
+      <td><%= link_to 'Hide', track_hide_path(track), class: 'btn btn-warning', tooltip: 'Hide from results' %></td>
     </tr>
   <% end %>
 </table>

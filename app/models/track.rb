@@ -13,7 +13,7 @@ require_relative '../errors'
 class Track < ApplicationRecord
   validates :name, presence: true
 
-  default_scope -> { order(listened_at: :desc) }
+  default_scope -> { order(listened_at: :desc).where(hidden: false) }
   scope :without_blank_album, -> { where.not(album: '') }
 
   class << self
