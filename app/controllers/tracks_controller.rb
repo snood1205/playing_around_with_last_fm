@@ -27,13 +27,25 @@ class TracksController < ApplicationController
     redirect_to job_path jid
   end
 
+  def unhide
+    track = Track.unscoped.find_by id: params[:track_id]
+    track.hidden = false
+    flash = if track.save
+              {info: "Track #{track.name} - #{track.artist} unhidden."}
+            else
+              {error: "Track could not be unhidden: #{track.errors}"}
+            end
+    redirect_back fallback_location: root_path, flash: flash
+  end
+
   def hide
     track = Track.find_by id: params[:track_id]
     track.hidden = true
     flash = if track.save
-              {info: "Track #{track.name} - #{track.artist} hidden"}
+              unhide_link = view_context.link_to 'Unhide', track_unhide_path(track)
+              {notice: "Track #{track.name} - #{track.artist} hidden. #{unhide_link}"}
             else
-              {error: "Track could not be deleted: #{track.errors}"}
+              {error: "Track could not be hidden: #{track.errors}"}
             end
     redirect_back fallback_location: root_path, flash: flash
   end

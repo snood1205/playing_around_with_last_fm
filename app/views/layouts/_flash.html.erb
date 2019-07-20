@@ -1,5 +1,5 @@
 <div class="container">
   <% flash.to_h.each_key do |key| %>
-    <%= flash_bootstrap_display key %>
+    <%= flash_bootstrap_display key, html_safe: true %>
   <% end %>
 </div>
