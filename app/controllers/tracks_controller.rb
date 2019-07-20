@@ -29,8 +29,13 @@ class TracksController < ApplicationController
 
   def hide
     track = Track.find_by id: params[:track_id]
-    track.update(hidden: true)
-    redirect_back fallback_location: root_path, flash: {info: "Track #{track.name} - #{track.artist} hidden"}
+    track.hidden = true
+    flash = if track.save
+              {info: "Track #{track.name} - #{track.artist} hidden"}
+            else
+              {error: "Track could not be deleted: #{track.errors}"}
+            end
+    redirect_back fallback_location: root_path, flash: flash
   end
 
   def report
