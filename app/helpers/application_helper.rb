@@ -1,8 +1,17 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
-  def track_by_actions
-    TracksController::VALID_BY_ACTIONS
+  FLASH_MATCHING = {
+    alert: 'alert-warning',
+    error: 'alert-danger',
+    info: 'alert-info',
+    notice: 'alert-info',
+    success: 'alert-success'
+  }.freeze
+
+  def flash_bootstrap_display(type)
+    btn_class = FLASH_MATCHING[type.to_sym]
+    content_tag :div, flash[type], class: ['alert', btn_class]
   end
 
   def navbar_anchor(contents, path, html_options = {})
@@ -26,6 +35,10 @@ module ApplicationHelper
   def option_item(contents, selected_item)
     selected = contents == selected_item
     content_tag :option, contents, selected: selected
+  end
+
+  def track_by_actions
+    TracksController::VALID_BY_ACTIONS
   end
 
   def append_class_to_html_options(html_options, class_to_append)

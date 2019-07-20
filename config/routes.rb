@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   end
   resources :tracks, except: :show do
     attributes.each { |attr| get attr, constraints: {track_id: /[\W\w]+/} }
+    get :hide
   end
 
   resources :jobs do
