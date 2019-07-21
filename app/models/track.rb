@@ -23,7 +23,7 @@ class Track < ApplicationRecord
     def fetch_new_tracks(job = nil)
       @track_count = 0
       Status.start_importing
-      last_time = Track.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
+      last_time = Track.unscoped.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
       total_pages = fetch_total_pages job
       puts_with_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
