@@ -15,6 +15,7 @@ class Track < ApplicationRecord
 
   default_scope -> { order(listened_at: :desc).where(hidden: false) }
   scope :without_blank_album, -> { where.not(album: '') }
+  scope :report, -> { unscoped.without_blank_album.where(hidden: false) }
 
   class << self
     # Fetchs all new tracks from last.fm by using the API
