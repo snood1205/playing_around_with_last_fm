@@ -56,7 +56,7 @@ class TracksController < ApplicationController
     @amount_of_time = [params[:length]&.to_i || 1, 1].max
     @top_count = params[:count]&.to_i || 10
     @attrs = VALID_BY_ACTIONS
-    @tracks = Track.unscoped.where(listened_at: @amount_of_time.send(@time).ago..DateTime.now)
+    @tracks = Track.report.where(listened_at: @amount_of_time.send(@time).ago..DateTime.now)
   end
 
   def action_missing(method)
