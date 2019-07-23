@@ -1,19 +1,23 @@
-<h2>Report from past <%= pluralize @amount_of_time, @time %></h2>
-<h4>Total Scrobbles: <%= @tracks.count %></h4>
-<%= form_tag report_tracks_path, method: :get do %>
-  <div class="form-group">
-    <label for="time">Time Period</label>
-    <%= select '', 'time', track_time_periods, {}, class: 'form-control' %>
-  </div>
-  <div class="form-group">
-    <label for="length">Amount of Time</label>
-    <input type="number" class="form-control" name="length" min="1" placeholder="<%= @amount_of_time %>">
-  </div>
-  <button class="btn btn-primary">Submit</button>
-<% end %>
-<% @attrs.each do |attr| %>
-  <div class="jumbotron">
-    <h3>Top <%= attr.to_s.pluralize.titleize %></h3>
-    <%= render 'top', attribute: attr %>
-  </div>
-<% end %>
+<div class="jumbotron">
+  <h2 class="float-left">Report from past <%= pluralize @amount_of_time, @time %></h2>
+  <h2 class="float-right">Total Scrobbles: <%= @tracks.count %></h2>
+</div>
+<div class="container">
+  <%= form_tag report_tracks_path, method: :get do %>
+    <div class="form-group">
+      <label for="time">Time Period</label>
+      <%= select '', 'time', track_time_periods, {}, class: 'form-control' %>
+    </div>
+    <div class="form-group">
+      <label for="length">Amount of Time</label>
+      <input type="number" class="form-control" name="length" min="1" placeholder="<%= @amount_of_time %>">
+    </div>
+    <button class="btn btn-primary">Submit</button>
+  <% end %>
+  <% @attrs.each do |attr| %>
+    <div class="jumbotron">
+      <h3>Top <%= attr.to_s.pluralize.titleize %></h3>
+      <%= render 'top', attribute: attr %>
+    </div>
+  <% end %>
+</div>
