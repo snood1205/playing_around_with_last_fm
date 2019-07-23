@@ -65,26 +65,9 @@ class TracksController < ApplicationController
       @action = @action.split('_and_').map(&:to_sym)
       return super unless @action.all? { |attr| VALID_BY_ACTIONS.include? attr }
 
-      # This is formatted as such {actions => count}
-      scoped_tracks = if @action == %i[album]
-                        Track.unscoped.without_blank_album
-                      else
-                        Track.unscoped
-                      end
-      track_array = scoped_tracks.group(*@action).count.sort_by { |_, v| -v }
-      @tracks = Kaminari.paginate_array(track_array).page(@page_number).per 100
-      set_page_ranges
-      render :count
+      count
     elsif VALID_BY_ACTIONS.include? method.to_sym
-      @title = params[:track_id]
-      tracks = Track.where(method => @title)
-      VALID_BY_ACTIONS.each do |attr|
-        instance_variable_set :"@#{attr}", tracks.pluck(attr).uniq.sort
-      end
-      @method = method
-      @attributes_minus_method = VALID_BY_ACTIONS - [method.to_sym]
-      @count = tracks.count
-      render :individual_total
+      individual_total method
     else
       super
     end
@@ -103,5 +86,33 @@ class TracksController < ApplicationController
   def set_page_ranges
     @last_page = @tracks.total_pages
     @page_range = ([@page_number - PAGE_SPREAD, 2].max)..([@page_number + PAGE_SPREAD, @last_page.pred].min)
+  end
+
+  def individual_total(method)
+    @title = params[:track_id]
+    tracks = Track.where(method => @title)
+    VALID_BY_ACTIONS.each do |attr|
+      keys = tracks.pluck(attr).uniq
+      map = keys.map { |key| [key, tracks.where(attr => key).count] }
+              .sort_by { |_, v| -v }
+      instance_variable_set :"@#{attr}", map
+    end
+    @method = method
+    @attributes_minus_method = VALID_BY_ACTIONS - [method.to_sym]
+    @count = tracks.count
+    render :individual_total
+  end
+
+  def count
+    # This is formatted as such {actions => count}
+    scoped_tracks = if @action == %i[album]
+                      Track.unscoped.without_blank_album
+                    else
+                      Track.unscoped
+                    end
+    track_array = scoped_tracks.group(*@action).count.sort_by { |_, v| -v }
+    @tracks = Kaminari.paginate_array(track_array).page(@page_number).per 100
+    set_page_ranges
+    render :count
   end
 end
