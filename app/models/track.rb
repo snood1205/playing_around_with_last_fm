@@ -29,11 +29,7 @@ class Track < ApplicationRecord
 			puts_with_log "total pages fetched: #{total_pages}", job
 			(1..total_pages).each do |page_number|
 				tracks = fetch_tracks page_number, job
-				z = process_tracks tracks, last_time
-				unless z
-					binding.pry
-					break
-				end
+				break unless process_tracks tracks, last_time
 			end
 			@track_count
 		ensure
