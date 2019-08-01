@@ -94,12 +94,13 @@ class TracksController < ApplicationController
     VALID_BY_ACTIONS.each do |attr|
       keys = tracks.pluck(attr).uniq
       map = keys.map { |key| [key, tracks.where(attr => key).count] }
-              .sort_by { |_, v| -v }
+                .sort_by { |_, v| -v }
       instance_variable_set :"@#{attr}", map
     end
     @method = method
     @attributes_minus_method = VALID_BY_ACTIONS - [method.to_sym]
     @count = tracks.count
+    @listened_at = tracks.pluck :listened_at
     render :individual_total
   end
 
