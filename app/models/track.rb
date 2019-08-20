@@ -36,6 +36,14 @@ class Track < ApplicationRecord
       Status.end_importing
     end
 
+    def dedup_tracks
+      all.group_by {|track| track.listend_at}.to_a.select do |track|
+        track[1].length > 1
+      end.each do |_, tracks|
+        tracks[1..-1].each(&:destroy)
+      end
+    end
+
     private
 
     # Processes track array (normally 50 tracks) and creates track based on information parsed out from

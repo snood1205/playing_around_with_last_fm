@@ -20,4 +20,9 @@ namespace :tracks do
     puts 'Fetching all tracks'
     Rake::Task['tracks:fetch'].invoke '--verbose'
   end
+
+  desc 'Dedup tracks'
+  task dedup: :environment do
+    DedupTracksWorker.perform_async
+  end
 end
