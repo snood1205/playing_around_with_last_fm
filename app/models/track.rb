@@ -37,7 +37,7 @@ class Track < ApplicationRecord
     end
 
     def dedup_tracks
-      all.group_by {|track| track.listend_at}.to_a.select do |track|
+      all.group_by {|track| track.listened_at}.to_a.select do |track|
         track[1].length > 1
       end.each do |_, tracks|
         tracks[1..-1].each(&:destroy)
