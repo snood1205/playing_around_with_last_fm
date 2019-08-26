@@ -27,6 +27,11 @@ class TracksController < ApplicationController
     redirect_to job_path jid
   end
 
+  def dedup
+    jid = DedupTracksWorker.perform_async
+    redirect_to job_path jid
+  end
+
   def unhide
     track = Track.unscoped.find_by id: params[:track_id]
     track.hidden = false
