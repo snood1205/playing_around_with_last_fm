@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     get :report
     get :fetch_new_tracks
     get :clear_all_tracks
+    get :dedup
   end
   resources :tracks, except: :show do
     attributes.each { |attr| get attr, constraints: {track_id: /[\W\w]+/} }
