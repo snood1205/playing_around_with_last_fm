@@ -8,7 +8,7 @@ class DedupTracksWorker
     job.log 'deduping tracks...'
     tracks_deduped = Track.dedup_tracks
     job.log 'Tracks deduped!'
-    job.log "Duplicated tracks removed: #{tracks_deduped}"
+    job.log "Duplicated tracks removed: #{tracks_deduped.count}"
     job.mark_as_completed
   end
 end
