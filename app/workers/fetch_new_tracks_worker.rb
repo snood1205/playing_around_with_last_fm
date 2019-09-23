@@ -10,6 +10,10 @@ class FetchNewTracksWorker
     track_count = Track.fetch_new_tracks job
     job.log 'Job completed!'
     job.log "Tracks inserted: #{track_count}"
+    job.log 'Deduping tracks...'
+    tracks_deduped = Track.dedup_tracks
+    job.log 'Tracks deduped!'
+    job.log "Duplicated tracks removed: #{tracks_deduped.count}"
     job.mark_as_completed
   end
 end
