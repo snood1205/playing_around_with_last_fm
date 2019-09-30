@@ -1,5 +1,9 @@
 <div class="jumbotron">
-  <h2 class="float-left">Report from past <%= pluralize @amount_of_time, @time %></h2>
+  <% if @time != 'year_to_date' %>
+    <h2 class="float-left">Report from past <%= pluralize @amount_of_time, @time %></h2>
+  <% else %>
+    <h2 class="float-left">Report from year to date</h2>
+  <% end %>
   <h2 class="float-right">Total Scrobbles: <%= @tracks.count %></h2>
 </div>
 <div class="container">
