@@ -5,7 +5,7 @@ class TracksController < ApplicationController
   include TracksHelper
 
   VALID_BY_ACTIONS = %i[artist album name].freeze
-  VALID_TIME_PERIODS = %w[week day month year].freeze
+  VALID_TIME_PERIODS = %w[week day month year year_to_date].freeze
   PAGE_SPREAD = 4
 
   before_action :set_page_number, except: %i[fetch_new_tracks report]
@@ -61,7 +61,11 @@ class TracksController < ApplicationController
     @amount_of_time = [params[:length]&.to_i || 1, 1].max
     @top_count = params[:count]&.to_i || 10
     @attrs = VALID_BY_ACTIONS
-    @tracks = Track.report.where(listened_at: @amount_of_time.send(@time).ago..DateTime.now)
+    @tracks = if @time == 'year_to_date'
+                Track.report.where DateTime.new(DateTime.now.year, 1, 1)..DateTime.now
+              else
+                Track.report.where listened_at: @amount_of_time.send(@time).ago..DateTime.now
+              end
   end
 
   def action_missing(method)
