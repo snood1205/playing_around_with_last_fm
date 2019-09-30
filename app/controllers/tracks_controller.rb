@@ -56,8 +56,13 @@ class TracksController < ApplicationController
   end
 
   def report
-    @time = params[:time].downcase if VALID_TIME_PERIODS.include? params[:time]&.downcase
-    @time ||= 'week'
+    @time = if VALID_TIME_PERIODS.include? params[:time]&.downcase
+              params[:time].downcase
+            elsif params[:time].downcase == 'year to date'
+              'year_to_date'
+            else
+              'week' # default to week
+            end
     @amount_of_time = [params[:length]&.to_i || 1, 1].max
     @top_count = params[:count]&.to_i || 10
     @attrs = VALID_BY_ACTIONS
