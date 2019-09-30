@@ -62,7 +62,7 @@ class TracksController < ApplicationController
     @top_count = params[:count]&.to_i || 10
     @attrs = VALID_BY_ACTIONS
     @tracks = if @time == 'year_to_date'
-                Track.report.where DateTime.new(DateTime.now.year, 1, 1)..DateTime.now
+                Track.report.where listened_at: DateTime.new(DateTime.now.year, 1, 1)..DateTime.now
               else
                 Track.report.where listened_at: @amount_of_time.send(@time).ago..DateTime.now
               end
