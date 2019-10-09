@@ -58,7 +58,7 @@ class TracksController < ApplicationController
   def report
     @time = if VALID_TIME_PERIODS.include? params[:time]&.downcase
               params[:time].downcase
-            elsif params[:time].downcase == 'year to date'
+            elsif params[:time]&.downcase == 'year to date'
               'year_to_date'
             else
               'week' # default to week
