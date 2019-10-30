@@ -5,12 +5,17 @@ require 'net/http'
 namespace :tracks do
   desc 'Fetch new tracks'
   task fetch: :environment do
-    FetchNewTracksWorker.perform_async
+    FetchNewTracksWorker.new.perform
+  end
+
+  desc 'Fetch all tracks'
+  task fetch_all: :environment do
+    FetchAllTracksWorker.new.perform
   end
 
   desc 'Delete all tracks'
   task delete_all: :environment do
-    DeleteAllTracksWorker.perform_async
+    DeleteAllTracksWorker.new.perform
   end
 
   desc 'Reset tracks'
@@ -23,6 +28,6 @@ namespace :tracks do
 
   desc 'Dedup tracks'
   task dedup: :environment do
-    DedupTracksWorker.perform_async
+    DedupTracksWorker.new.perform
   end
 end

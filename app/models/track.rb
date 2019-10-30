@@ -36,6 +36,23 @@ class Track < ApplicationRecord
       Status.end_importing
     end
 
+    # Fetchs all tracks from last.fm by using the API
+    #
+    # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
+    def fetch_all_tracks(job = nil)
+      @track_count = 0
+      Status.start_importing
+      total_pages = fetch_total_pages job
+      puts_with_log "total pages fetched: #{total_pages}", job
+      (1..total_pages).each do |page_number|
+        tracks = fetch_tracks page_number, job
+        process_tracks tracks
+      end
+      @track_count
+    ensure
+      Status.end_importing
+    end
+
     def dedup_tracks
       all.group_by {|track| track.listened_at}.to_a.select do |track|
         track[1].length > 1
@@ -53,8 +70,12 @@ class Track < ApplicationRecord
     # @param last_time [DateTime] the most recent time listened to of any track in the database (or epoch if there are
     #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
     # @return [Boolean] returns true if the job should be continued, false otherwise
-    def process_tracks(tracks, last_time)
-      tracks.all? { |track| create_track track, last_time }
+    def process_tracks(tracks, last_time = nil)
+      if last_time.nil?
+        tracks.each { |track| create_track track } && true
+      else
+        tracks.all? { |track| create_track track, last_time }
+      end
     end
 
     # Creates a track from the parsed hash.
@@ -86,7 +107,7 @@ class Track < ApplicationRecord
     #  no songs with listened_at times in the database). Is used to check to not double-insert songs.
     # @return [Boolean] returns whether or not the tracks should continue being created. This is based on the
     #  listened_at check.
-    def create_track(track_hash, last_time)
+    def create_track(track_hash, last_time = nil)
       artist = track_hash['artist']['#text']
       album = track_hash['album']['#text']
       image_url = track_hash['image'].last['#text']
@@ -98,7 +119,7 @@ class Track < ApplicationRecord
       return true unless track_hash.key? 'date'
 
       listened_at = Time.at(track_hash['date']['uts'].to_i).utc.to_datetime
-      was_already_inserted = listened_at <= last_time
+      was_already_inserted = !last_time.nil? && listened_at <= last_time
       unless was_already_inserted
         @track_count += 1
         Track.create artist: artist, album: album, name: name, listened_at: listened_at, url: url, image_url: image_url
