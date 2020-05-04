@@ -15,6 +15,11 @@ class TracksController < ApplicationController
     @tracks = Track.page(@page_number).per 100
     @actions = VALID_BY_ACTIONS
     set_page_ranges
+
+    respond_to do |format|
+      format.html
+      format.json
+    end
   end
 
   def fetch_new_tracks
