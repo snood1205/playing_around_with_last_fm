@@ -37,18 +37,22 @@ module TracksHelper
   end
 
   def top_tag(tracks, attribute, count)
-    tracks = tracks.without_blank_album if attribute == :album
-    tracks.group(attribute).count.sort_by { |_, v| -v }.first(count).map do |attr, count|
+    top_tag_base(tracks, attribute, count).map do |attr, cnt|
       content_tag :tr do
-        content_tag(:td, attr) + content_tag(:td, count)
+        content_tag(:td, attr) + content_tag(:td, cnt)
       end
     end.inject(:+)
+  end
+
+  def top_tag_base(tracks, attribute, count)
+    tracks = tracks.without_blank_album if attribute == :album
+    tracks.group(attribute).count.sort_by { |_, v| -v }.first(count)
   end
 
   def total_tag(tracks, attribute)
     content_tag :tr do
       content_tag(:th, "Total Unique Songs by #{attribute.to_s.titleize}") +
-        content_tag(:th, tracks.distinct.pluck(attribute).count)
+          content_tag(:th, tracks.distinct.pluck(attribute).count)
     end
   end
 

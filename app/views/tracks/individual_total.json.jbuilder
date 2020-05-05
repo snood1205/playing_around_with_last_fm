@@ -4,4 +4,5 @@ json.array! @attributes_minus_method do |attr|
     json.count count
     json.value value
   end
+  json.listened_at @listened_at
 end
