@@ -40,3 +40,4 @@ response_*.html
 /.yardoc/
 .generators
 .rakeTasks
+/coverage/

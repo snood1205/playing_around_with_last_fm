@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       end
     end
 
+    get :total
     get :report
     get :fetch_new_tracks
     get :clear_all_tracks
