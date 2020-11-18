@@ -1,71 +1,61 @@
-# Ruby CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-ruby/ for more details
-#
-version: 2
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+
 jobs:
   build:
     docker:
-      # specify the version you desire here
-      - image: circleci/ruby:2.6.1-node-browsers
-        environment:
-          PGHOST: localhost
-          PGUSER: playing_around_with_last_fm
-          RAILS_ENV: test
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      - image: circleci/postgres:9.6
-        environment:
-          POSTGRES_USER: playing_around_with_last_fm
-          POSTGRES_DB: playing_around_with_last_fm_test
-          POSTGRES_PASSWORD: ''
-
-    working_directory: ~/repo
-
+      - image: cimg/ruby:2.7.2
     steps:
       - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
-
+      - ruby/install-deps
+  lint:
+    docker:
+      - image: cimg/ruby:2.7.2
+    steps:
+      - checkout
+      - ruby/install-deps
       - run:
-          name: install dependencies
-          command: |
-            bundle install --jobs=4 --retry=3 --path vendor/bundle
-
-      - save_cache:
-          paths:
-            - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-
-      # Database setup
-      - run: bundle exec rake db:create
-      - run: bundle exec rake db:schema:load
-
-      # run tests!
+          name: Rubocop lint
+          command: bundle exec rubocop
+  test:
+    parallelism: 1
+    docker:
+      - image: cimg/ruby:2.7.2
+      - image: circleci/postgres:9.5-alpine
+        environment:
+          POSTGRES_USER: steepd
+          POSTGRES_DB: steepd_test
+          POSTGRES_PASSWORD: steepd_test_password
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      PGHOST: 127.0.0.1
+      PGUSER: steepd
+      PGPASSWORD: steepd_test_password
+      RAILS_ENV: test
+      IS_CI: true
+    steps:
+      - checkout
+      - ruby/install-deps
       - run:
-          name: run tests
-          command: |
-            mkdir /tmp/test-results
-            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
-              circleci tests split --split-by=timings)"
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Database setup
+          command: rm db/schema.rb && bundle exec rails db:create && bundle exec rails db:migrate
+      - run:
+          name: Run tests
+          command: bundle exec rspec
 
-            bundle exec rspec \
-              --format progress \
-              --format RspecJunitFormatter \
-              --out /tmp/test-results/rspec.xml \
-              --format progress \
-              $TEST_FILES
-
-      # collect reports
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
+      - lint:
+          requires:
+            - build
+      - test:
+          requires:
+            - build
