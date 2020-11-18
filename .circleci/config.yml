@@ -24,7 +24,7 @@ jobs:
   test:
     parallelism: 1
     docker:
-      - image: cimg/ruby:2.7.2
+      - image: cimg/ruby:2.7.2-node
       - image: circleci/postgres:9.5-alpine
         environment:
           POSTGRES_USER: steepd
