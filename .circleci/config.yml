@@ -10,16 +10,14 @@ jobs:
     steps:
       - checkout
       - ruby/install-deps
-      - node/install-packages:
-          pkg-manager: yarn
+      - node/install-packages
   lint:
     docker:
       - image: cimg/ruby:2.7.2-node
     steps:
       - checkout
       - ruby/install-deps
-      - node/install-packages:
-          pkg-manager: yarn
+      - node/install-packages
       - run:
           name: Rubocop lint
           command: bundle exec rubocop
@@ -43,8 +41,7 @@ jobs:
     steps:
       - checkout
       - ruby/install-deps
-      - node/install-packages:
-          pkg-manager: yarn
+      - node/install-packages
       - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
