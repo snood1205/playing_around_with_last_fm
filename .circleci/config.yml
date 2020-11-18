@@ -12,7 +12,6 @@ jobs:
       - ruby/install-deps
       - node/install-packages:
           pkg-manager: yarn
-          lockfile: "yarn.lock"
   lint:
     docker:
       - image: cimg/ruby:2.7.2-node
@@ -21,7 +20,6 @@ jobs:
       - ruby/install-deps
       - node/install-packages:
           pkg-manager: yarn
-          lockfile: "yarn.lock"
       - run:
           name: Rubocop lint
           command: bundle exec rubocop
@@ -47,7 +45,6 @@ jobs:
       - ruby/install-deps
       - node/install-packages:
           pkg-manager: yarn
-          lockfile: "yarn.lock"
       - run:
           name: Wait for DB
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
