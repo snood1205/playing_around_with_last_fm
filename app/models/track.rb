@@ -54,7 +54,7 @@ class Track < ApplicationRecord
     end
 
     def dedup_tracks
-      all.group_by {|track| track.listened_at}.to_a.select do |track|
+      all.group_by(&:listened_at).to_a.select do |track|
         track[1].length > 1
       end.each do |_, tracks|
         tracks[1..-1].each(&:destroy)
@@ -142,7 +142,7 @@ class Track < ApplicationRecord
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
         return fetch_total_pages job, retry_count + 1 if retry_count < 5
 
-        puts_with_log 'unable to fetch number of total pages', :error
+        puts_with_log 'unable to fetch number of total pages', job, :error
         raise FetchError, 'unable to fetch number of total pages'
       end
     end
@@ -189,9 +189,9 @@ class Track < ApplicationRecord
     # @param severity [Symbol] the severity level for the message (can be :info, :warn, or :error). Defaults to `:info`.
     def puts_with_log(message, job, severity = :info)
       puts_method = {
-          info: :puts,
-          warn: :warn,
-          error: :warn # cowardly using warn instead of raise to allow application to continue running.
+        info: :puts,
+        warn: :warn,
+        error: :warn # cowardly using warn instead of raise to allow application to continue running.
       }[severity]
       job&.log message, severity
       send puts_method, message
