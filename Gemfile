@@ -37,7 +37,7 @@ end
 
 group :development do
   gem 'capistrano-rails'
-  gem 'listen', '>= 3.0.5', '< 3.2'
+  gem 'listen', '>= 3.0.5', '< 3.6'
   gem 'rubocop-rails'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
