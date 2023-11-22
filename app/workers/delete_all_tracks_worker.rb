@@ -4,7 +4,7 @@ class DeleteAllTracksWorker
   include Sidekiq::Worker
 
   def perform
-    job = Job.create name: self.class.to_s, started_at: DateTime.now, jid: jid
+    job = Job.create(name: self.class.to_s, started_at: DateTime.now, jid:)
     job.log 'deleting all tracks...'
     tracks_deleted = Track.delete_all
     job.log 'All tracks deleted!'

@@ -1,22 +1,33 @@
-require: rubocop-rails
+require:
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-rails
+  - rubocop-rspec
 
 AllCops:
   Exclude:
     - db/schema.rb
-
-Style/Documentation:
-  Enabled: false
-
-Metrics/LineLength:
-  Max: 120
-
-Rails/Output:
-  Enabled: false
-
-# Prefer character literal for certain situations such as flags
-Style/CharacterLiteral:
-  Enabled: false
+  NewCops: enable
 
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
 
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    - 'bin/*'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'app/controllers/*_controller.rb'
+
+Rails/Output:
+  Enabled: false
+
+Style/CharacterLiteral:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false

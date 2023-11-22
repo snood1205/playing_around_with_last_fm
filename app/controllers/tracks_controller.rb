@@ -11,7 +11,7 @@ class TracksController < ApplicationController
   before_action :set_page_number, except: %i[fetch_new_tracks report]
 
   def index
-    @username = ENV['USERNAME']
+    @username = params[:username] || ENV.fetch('USERNAME', nil)
     @tracks = Track.page(@page_number).per 100
     @actions = VALID_BY_ACTIONS
     set_page_ranges
@@ -45,37 +45,27 @@ class TracksController < ApplicationController
             else
               {error: "Track could not be unhidden: #{track.errors}"}
             end
-    redirect_back fallback_location: root_path, flash: flash
+    redirect_back fallback_location: root_path, flash:
   end
 
   def hide
-    track = Track.find_by id: params[:track_id]
+    track = Track.find_by id: params[:id]
     track.hidden = true
     flash = if track.save
-              unhide_link = view_context.link_to 'Unhide', track_unhide_path(track)
+              unhide_link = view_context.link_to 'Unhide', unhide_track_path(track)
               {notice: "Track #{track.name} - #{track.artist} hidden. #{unhide_link}"}
             else
               {error: "Track could not be hidden: #{track.errors}"}
             end
-    redirect_back fallback_location: root_path, flash: flash
+    redirect_back fallback_location: root_path, flash:
   end
 
   def report
-    @time = if VALID_TIME_PERIODS.include? params[:time]&.downcase
-              params[:time].downcase
-            elsif params[:time]&.downcase == 'year to date'
-              'year_to_date'
-            else
-              'week' # default to week
-            end
+    determine_time!
     @amount_of_time = [params[:length]&.to_i || 1, 1].max
     @top_count = params[:count]&.to_i || 10
     @attrs = VALID_BY_ACTIONS
-    @tracks = if @time == 'year_to_date'
-                Track.report.where listened_at: DateTime.new(DateTime.now.year, 1, 1)..DateTime.now
-              else
-                Track.report.where listened_at: @amount_of_time.send(@time).ago..DateTime.now
-              end
+    determine_tracks_by_time!
   end
 
   def action_missing(method)
@@ -110,17 +100,39 @@ class TracksController < ApplicationController
   def individual_total(method)
     @title = params[:track_id]
     tracks = Track.where(method => @title)
+    dynamic_variable_assignment tracks
+    @method = method
+    @attributes_minus_method = VALID_BY_ACTIONS - [method.to_sym]
+    @count = tracks.count
+    @listened_at = tracks.pluck :listened_at
+    render :individual_total
+  end
+
+  def dynamic_variable_assignment(tracks)
     VALID_BY_ACTIONS.each do |attr|
       keys = tracks.pluck(attr).uniq
       map = keys.map { |key| [key, tracks.where(attr => key).count] }
                 .sort_by { |_, v| -v }
       instance_variable_set :"@#{attr}", map
     end
-    @method = method
-    @attributes_minus_method = VALID_BY_ACTIONS - [method.to_sym]
-    @count = tracks.count
-    @listened_at = tracks.pluck :listened_at
-    render :individual_total
+  end
+
+  def determine_tracks_by_time!
+    @tracks = if @time == 'year_to_date'
+                Track.report.where listened_at: DateTime.new(DateTime.now.year, 1, 1)..DateTime.now
+              else
+                Track.report.where listened_at: @amount_of_time.send(@time).ago..DateTime.now
+              end
+  end
+
+  def determine_time!
+    @time = if VALID_TIME_PERIODS.include? params[:time]&.downcase
+              params[:time].downcase
+            elsif params[:time]&.downcase == 'year to date'
+              'year_to_date'
+            else
+              'week' # default to week
+            end
   end
 
   def count

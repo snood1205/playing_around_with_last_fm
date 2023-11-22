@@ -5,9 +5,9 @@ require 'net/http'
 class FetchAllTracksWorker
   include Sidekiq::Worker
 
-  def perform
-    job = Job.create name: self.class.to_s, started_at: DateTime.now, jid: jid
-    track_count = Track.fetch_all_tracks job
+  def perform(username)
+    job = Job.create(name: self.class.to_s, started_at: DateTime.now, jid:)
+    track_count = Track.fetch_all_tracks username, job
     job.log 'Job completed!'
     job.log "Tracks inserted: #{track_count}"
     job.log 'Deduping tracks...'

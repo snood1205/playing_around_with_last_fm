@@ -2,16 +2,7 @@
 
 module TracksHelper
   def page_link_item(page, current_page, last_page, li_class: 'page-item', anchor_class: 'page-link')
-    link, number = case page
-                   when 'Previous'
-                     construct_page_number current_page.pred
-                   when 'Next'
-                     construct_page_number current_page.succ
-                   when '...'
-                     ?#
-                   else
-                     construct_page_number page
-                   end
+    link, number = determine_page_number page
 
     return if (number && number <= 0) || (page == 'Next' && last_page < 2)
 
@@ -32,7 +23,7 @@ module TracksHelper
 
     return content_tag :span if value.nil? || value.blank?
 
-    url = send "track_#{attribute}_url", value
+    url = send "#{attribute}_track_url", value
     link_to value, url, html_options
   end
 
@@ -52,7 +43,7 @@ module TracksHelper
   def total_tag(tracks, attribute)
     content_tag :tr do
       content_tag(:th, "Total Unique Songs by #{attribute.to_s.titleize}") +
-          content_tag(:th, tracks.distinct.pluck(attribute).count)
+        content_tag(:th, tracks.distinct.pluck(attribute).count)
     end
   end
 
@@ -61,6 +52,19 @@ module TracksHelper
   end
 
   private
+
+  def determine_page_number(page)
+    case page
+    when 'Previous'
+      construct_page_number current_page.pred
+    when 'Next'
+      construct_page_number current_page.succ
+    when '...'
+      ?#
+    else
+      construct_page_number page
+    end
+  end
 
   def set_disabled_class(page, current_page, last_page, html_options)
     disabled_class = page.nil? || page == current_page || page < 1 || page > last_page ? 'disabled' : nil

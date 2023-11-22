@@ -21,16 +21,12 @@ class Track < ApplicationRecord
     # Fetchs all new tracks from last.fm by using the API
     #
     # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
-    def fetch_new_tracks(job = nil)
+    def fetch_new_tracks(username, job = nil, **options)
+      return if ENV['API_KEY'].nil?
+
       @track_count = 0
       Status.start_importing
-      last_time = Track.unscoped.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
-      total_pages = fetch_total_pages job
-      puts_with_log "total pages fetched: #{total_pages}", job
-      (1..total_pages).each do |page_number|
-        tracks = fetch_tracks page_number, job
-        break unless process_tracks tracks, last_time
-      end
+      fetch_tracks_by_total_pages username, job, options
       @track_count
     ensure
       Status.end_importing
@@ -39,14 +35,13 @@ class Track < ApplicationRecord
     # Fetchs all tracks from last.fm by using the API
     #
     # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
-    def fetch_all_tracks(job = nil)
+    def fetch_all_tracks(username, job = nil)
       @track_count = 0
       Status.start_importing
-      total_pages = fetch_total_pages job
+      total_pages = fetch_total_pages username, job
       puts_with_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
-        tracks = fetch_tracks page_number, job
-        process_tracks tracks
+        fetch_and_process_tracks page_number, job
       end
       @track_count
     ensure
@@ -54,10 +49,11 @@ class Track < ApplicationRecord
     end
 
     def dedup_tracks
-      all.group_by {|track| track.listened_at}.to_a.select do |track|
+      tracks_to_dedup = all.group_by(&:listened_at).to_a.select do |track|
         track[1].length > 1
-      end.each do |_, tracks|
-        tracks[1..-1].each(&:destroy)
+      end
+      tracks_to_dedup.each do |_, tracks|
+        tracks[1..].each(&:destroy)
       end
     end
 
@@ -108,11 +104,7 @@ class Track < ApplicationRecord
     # @return [Boolean] returns whether or not the tracks should continue being created. This is based on the
     #  listened_at check.
     def create_track(track_hash, last_time = nil)
-      artist = track_hash['artist']['#text']
-      album = track_hash['album']['#text']
-      image_url = track_hash['image'].last['#text']
-      name = track_hash['name']
-      url = track_hash['url']
+      artist, album, image_url, name, url = parse_data_from_track_hash track_hash
       # After careful consideration, we can just wait to import the song that's currently playing until after it's
       # done playing. This isn't a serious issue and the solution before led to double insertions at times and incorrect
       # listened_at at times. This is a more conservative and "truthful" solution.
@@ -122,7 +114,7 @@ class Track < ApplicationRecord
       was_already_inserted = !last_time.nil? && listened_at <= last_time
       unless was_already_inserted
         @track_count += 1
-        Track.create artist: artist, album: album, name: name, listened_at: listened_at, url: url, image_url: image_url
+        Track.create artist:, album:, name:, listened_at:, url:, image_url:
       end
       !was_already_inserted
     end
@@ -133,14 +125,14 @@ class Track < ApplicationRecord
     # @param retry_count [Integer] the retry attempt number (defaults to 0).
     #
     # @return [Hash] the JSON converted to a Ruby hash.
-    def fetch_total_pages(job, retry_count = 0)
+    def fetch_total_pages(username, job, retry_count = 0)
       puts_with_log 'fetching total pages...', job
-      json = Net::HTTP.get(*generate_url(ENV['API_KEY'], 1, ENV['USERNAME']))
+      json = Net::HTTP.get(*generate_url(ENV.fetch('API_KEY', nil), 1, username))
       begin
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue JSON::ParserError, NoMethodError
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
-        return fetch_total_pages job, retry_count + 1 if retry_count < 5
+        return fetch_total_pages username, job, retry_count + 1 if retry_count < 5
 
         puts_with_log 'unable to fetch number of total pages', :error
         raise FetchError, 'unable to fetch number of total pages'
@@ -156,7 +148,7 @@ class Track < ApplicationRecord
     # @return [Array<Hash>] an array of hashes of the tracks.
     def fetch_tracks(page_number, job, retry_count = 0)
       puts_with_log "fetching page #{page_number}", job
-      json = Net::HTTP.get(*generate_url(ENV['API_KEY'], page_number, ENV['USERNAME']))
+      json = Net::HTTP.get(*generate_url(ENV.fetch('API_KEY', nil), page_number, ENV.fetch('USERNAME', nil)))
       begin
         JSON.parse(json)['recenttracks']['track']
       rescue JSON::ParserError, NoMethodError
@@ -165,6 +157,11 @@ class Track < ApplicationRecord
 
         raise FetchError, "unable to fetch page number #{page_number}"
       end
+    end
+
+    def fetch_and_process_tracks(page_number, job, last_time = nil)
+      tracks = fetch_tracks page_number, job
+      process_tracks tracks, last_time
     end
 
     # Provides an array to allow `Net::HTTP.get` to construct a URL.
@@ -182,6 +179,23 @@ class Track < ApplicationRecord
       ]
     end
 
+    def parse_data_from_track_hash(track_hash)
+      [track_hash['artist']['#text'],
+       track_hash['album']['#text'],
+       track_hash['image'].last['#text'],
+       track_hash['name'],
+       track_hash['url']]
+    end
+
+    def fetch_tracks_by_total_pages(username, job, options)
+      last_time = Track.unscoped.where.not(listened_at: nil).pluck(:listened_at).max || DateTime.new(0)
+      total_pages = options[:total_pages] || fetch_total_pages(username, job)
+      puts_with_log "total pages fetched: #{total_pages}", job
+      (1..total_pages).each do |page_number|
+        break unless fetch_and_process_tracks page_number, job, last_time
+      end
+    end
+
     # If a job is provided, log both to the job and stdout/stderr, otherwise just logs to stdout/stderr.
     #
     # @param message [String] the text to be output and logged
@@ -189,9 +203,9 @@ class Track < ApplicationRecord
     # @param severity [Symbol] the severity level for the message (can be :info, :warn, or :error). Defaults to `:info`.
     def puts_with_log(message, job, severity = :info)
       puts_method = {
-          info: :puts,
-          warn: :warn,
-          error: :warn # cowardly using warn instead of raise to allow application to continue running.
+        info: :puts,
+        warn: :warn,
+        error: :warn # cowardly using warn instead of raise to allow application to continue running.
       }[severity]
       job&.log message, severity
       send puts_method, message

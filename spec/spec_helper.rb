@@ -2,7 +2,7 @@
 
 ENV['RAILS_ENV'] ||= 'test'
 
-require_relative './support/factory_bot'
+require_relative 'support/factory_bot'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

@@ -9,8 +9,10 @@ namespace :tracks do
   end
 
   desc 'Fetch all tracks'
-  task fetch_all: :environment do
-    FetchAllTracksWorker.new.perform
+  task :fetch_all, %i[username] => :environment do |_, arg|
+    raise 'Username is required' unless arg[:username]
+
+    FetchAllTracksWorker.new.perform arg[:username]
   end
 
   desc 'Delete all tracks'

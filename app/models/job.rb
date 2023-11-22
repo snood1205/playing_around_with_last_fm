@@ -8,7 +8,7 @@ class Job < ApplicationRecord
   default_scope -> { order(created_at: :desc) }
 
   def log(text, severity = :info)
-    JobLog.create job: self, message: text, severity: severity
+    JobLog.create job: self, message: text, severity:
   end
 
   def mark_as_completed
