@@ -14,10 +14,10 @@
       <tr>
         <% if values.is_a? Array %>
           <% values.zip(@action).each do |value, action| %>
-            <td><%= attribute_count_link value, action %></td>
+            <td><%= attribute_count_link value, action, @username %></td>
           <% end %>
         <% else %>
-          <td><%= attribute_count_link values, @action.first %></td>
+          <td><%= attribute_count_link values, @action.first, @username %></td>
         <% end %>
         <td><%= count %></td>
       </tr>

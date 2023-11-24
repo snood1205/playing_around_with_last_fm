@@ -4,8 +4,10 @@ require 'net/http'
 
 namespace :tracks do
   desc 'Fetch new tracks'
-  task fetch: :environment do
-    FetchNewTracksWorker.new.perform
+  task fetch:, %i[username] => :environment do |_, arg|
+    raise 'Username is required' unless arg[:username]
+
+    FetchNewTracksWorker.new.perform arg[:username]
   end
 
   desc 'Fetch all tracks'

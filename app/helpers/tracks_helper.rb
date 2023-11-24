@@ -2,7 +2,7 @@
 
 module TracksHelper
   def page_link_item(page, current_page, last_page, li_class: 'page-item', anchor_class: 'page-link')
-    link, number = determine_page_number page
+    link, number = determine_page_number page, current_page
 
     return if (number && number <= 0) || (page == 'Next' && last_page < 2)
 
@@ -13,7 +13,7 @@ module TracksHelper
     end
   end
 
-  def attribute_count_link(track, attribute, html_options = {})
+  def attribute_count_link(track, attribute, username, html_options = {})
     value = case track
             when Track
               track.send attribute
@@ -53,7 +53,7 @@ module TracksHelper
 
   private
 
-  def determine_page_number(page)
+  def determine_page_number(page, current_page)
     case page
     when 'Previous'
       construct_page_number current_page.pred

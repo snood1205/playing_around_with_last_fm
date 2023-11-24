@@ -41,7 +41,7 @@ class Track < ApplicationRecord
       total_pages = fetch_total_pages username, job
       puts_with_log "total pages fetched: #{total_pages}", job
       (1..total_pages).each do |page_number|
-        fetch_and_process_tracks page_number, job
+        fetch_and_process_tracks username, page_number, job
       end
       @track_count
     ensure
@@ -134,7 +134,8 @@ class Track < ApplicationRecord
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
         return fetch_total_pages username, job, retry_count + 1 if retry_count < 5
 
-        puts_with_log 'unable to fetch number of total pages', :error
+        puts_with_log 'unable to fetch number of total pages', job, :error
+        puts_with_log json, job, :error
         raise FetchError, 'unable to fetch number of total pages'
       end
     end
@@ -146,21 +147,21 @@ class Track < ApplicationRecord
     # @param retry_count [Integer] the retry attempt number (defaults to 0).
     #
     # @return [Array<Hash>] an array of hashes of the tracks.
-    def fetch_tracks(page_number, job, retry_count = 0)
+    def fetch_tracks(page_number, job, username, retry_count = 0)
       puts_with_log "fetching page #{page_number}", job
-      json = Net::HTTP.get(*generate_url(ENV.fetch('API_KEY', nil), page_number, ENV.fetch('USERNAME', nil)))
+      json = Net::HTTP.get(*generate_url(ENV.fetch('API_KEY', nil), page_number, username))
       begin
         JSON.parse(json)['recenttracks']['track']
       rescue JSON::ParserError, NoMethodError
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
-        return fetch_tracks page_number, job, retry_count + 1 if retry_count < 5
+        return fetch_tracks page_number, job, username, retry_count + 1 if retry_count < 5
 
         raise FetchError, "unable to fetch page number #{page_number}"
       end
     end
 
-    def fetch_and_process_tracks(page_number, job, last_time = nil)
-      tracks = fetch_tracks page_number, job
+    def fetch_and_process_tracks(username, page_number, job, last_time = nil)
+      tracks = fetch_tracks username, page_number, job
       process_tracks tracks, last_time
     end
 

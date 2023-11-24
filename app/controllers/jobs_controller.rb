@@ -15,7 +15,7 @@ class JobsController < ApplicationController
   end
 
   def kill
-    job = Job.find_by id: params[:job_id]
+    job = Job.find_by id: params[:id]
     flash = job&.kill ? {info: 'Job successfully killed'} : {error: 'Job could not be killed'}
     redirect_to job_path(job), flash:
   end

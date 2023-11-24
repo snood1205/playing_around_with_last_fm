@@ -3,16 +3,15 @@
 Rails.application.routes.draw do
   attributes = %w[artist name album]
 
-  resources :tracks, except: :show, param: :username do
+  resources :tracks, except: :index, param: :username do
     # Initialize all the by_artist_and_etc endpoints
     (1..attributes.size).each do |size|
       attributes.permutation(size).each do |attrs|
-        get "tracks/by_#{attrs.join('_and_')}", to: "tracks#by_#{attrs.join '_and_'}", as: :"by_#{attrs.join '_and_'}"
+        get "by_#{attrs.join('_and_')}", to: "tracks#by_#{attrs.join '_and_'}", as: :"by_#{attrs.join '_and_'}"
       end
     end
-    get 'tracks/:track_username', to: 'tracks#index', as: :by_username, constraints: {track_username: /[\W\w]+/}
 
-    attributes.each { |attr| get attr, constraints: {track_id: /[\W\w]+/}, on: :member }
+    attributes.each { |attr| get attr, constraints: { track_id: /[\W\w]+/ }, on: :member }
 
     # Custom collection routes
     collection do
@@ -31,5 +30,5 @@ Rails.application.routes.draw do
     get :kill, on: :member
   end
 
-  root 'tracks#index'
+  root 'home#index'
 end

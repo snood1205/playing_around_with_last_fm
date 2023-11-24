@@ -10,9 +10,9 @@ class TracksController < ApplicationController
 
   before_action :set_page_number, except: %i[fetch_new_tracks report]
 
-  def index
+  def show
     @username = params[:username] || ENV.fetch('USERNAME', nil)
-    @tracks = Track.page(@page_number).per 100
+    @tracks = Track.where(username: @username).page(@page_number).per 100
     @actions = VALID_BY_ACTIONS
     set_page_ranges
 
@@ -23,12 +23,12 @@ class TracksController < ApplicationController
   end
 
   def fetch_new_tracks
-    jid = FetchNewTracksWorker.perform_async
+    jid = FetchNewTracksWorker.perform_async params[:username]
     redirect_to job_path jid
   end
 
   def clear_all_tracks
-    jid = DeleteAllTracksWorker.perform_async
+    jid = DeleteAllTracksWorker.perform_async params[:username]
     redirect_to job_path jid
   end
 
