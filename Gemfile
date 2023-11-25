@@ -57,3 +57,5 @@ gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 gem 'rubocop-capybara', '~> 2.19', group: :development
 gem 'rubocop-factory_bot', '~> 2.24', group: :development
 gem 'rubocop-rspec', '~> 2.25', group: :development
+
+gem "foreman", "~> 0.87.2", :group => :development
