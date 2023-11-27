@@ -11,7 +11,7 @@ gem 'puma'
 gem 'rack-cors'
 gem 'rails'
 gem 'sass-rails'
-gem 'uglifier'
+gem 'terser'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
@@ -37,8 +37,12 @@ end
 
 group :development do
   gem 'capistrano-rails'
+  gem 'foreman'
   gem 'listen'
+  gem 'rubocop-capybara'
+  gem 'rubocop-factory_bot'
   gem 'rubocop-rails'
+  gem 'rubocop-rspec'
   gem 'spring'
   gem 'spring-watcher-listen'
   gem 'web-console'
@@ -54,8 +58,3 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]
 
-gem 'rubocop-capybara', '~> 2.19', group: :development
-gem 'rubocop-factory_bot', '~> 2.24', group: :development
-gem 'rubocop-rspec', '~> 2.25', group: :development
-
-gem "foreman", "~> 0.87.2", :group => :development
