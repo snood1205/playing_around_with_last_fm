@@ -9,7 +9,7 @@ require_relative '../errors'
 # @!attribute album [rw]
 #  @return [String] the name of the album of the track.
 # @!attribute listened_at [rw]
-#  @return [DateTime] the time at which the song was lisstened to (and scrobbled to last.fm).
+#  @return [DateTime] the time at which the song was listened to (and scrobbled to last.fm).
 class Track < ApplicationRecord
   validates :name, presence: true
 
@@ -18,7 +18,7 @@ class Track < ApplicationRecord
   scope :report, -> { unscoped.without_blank_album.where(hidden: false) }
 
   class << self
-    # Fetchs all new tracks from last.fm by using the API
+    # Fetches all new tracks from last.fm by using the API
     #
     # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
     def fetch_new_tracks(username, job = nil, **options)
@@ -32,7 +32,7 @@ class Track < ApplicationRecord
       Status.end_importing
     end
 
-    # Fetchs all tracks from last.fm by using the API
+    # Fetches all tracks from last.fm by using the API
     #
     # @param job [Job] the job to record logs to (can be nil and logs will just be output to stdout/stderr).
     def fetch_all_tracks(username, job = nil)
@@ -132,10 +132,9 @@ class Track < ApplicationRecord
         JSON.parse(json)['recenttracks']['@attr']['totalPages'].to_i
       rescue JSON::ParserError, NoMethodError
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
-        return fetch_total_pages username, job, retry_count + 1 if retry_count < 5
+        return fetch_total_pages username, job, retry_count + 1 if retry_count < 4
 
         puts_with_log 'unable to fetch number of total pages', job, :error
-        puts_with_log json, job, :error
         raise FetchError, 'unable to fetch number of total pages'
       end
     end
@@ -154,7 +153,7 @@ class Track < ApplicationRecord
         JSON.parse(json)['recenttracks']['track']
       rescue JSON::ParserError, NoMethodError
         puts_with_log "fetch retry number #{retry_count + 1}", job, :warn
-        return fetch_tracks page_number, job, username, retry_count + 1 if retry_count < 5
+        return fetch_tracks page_number, job, username, retry_count + 1 if retry_count < 4
 
         raise FetchError, "unable to fetch page number #{page_number}"
       end

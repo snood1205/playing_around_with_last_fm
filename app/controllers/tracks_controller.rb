@@ -23,7 +23,7 @@ class TracksController < ApplicationController
   end
 
   def fetch_new_tracks
-    jid = FetchNewTracksWorker.perform_async params[:username]
+    jid = FetchNewTracksWorker.perform_async params[:track_username]
     redirect_to job_path jid
   end
 

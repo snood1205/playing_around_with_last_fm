@@ -9,7 +9,7 @@
       <% end %>
     <% end %>
     <%= navbar_link_item ?|, ?# %>
-    <%= navbar_link_item 'reports', report_tracks_path %>
+    <%= navbar_link_item 'reports', track_report_url(track_username: username) unless username.nil? %>
     <%= navbar_link_item ?|, ?# %>
     <%= navbar_link_item 'jobs', jobs_path %>
   </ul>
