@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: playing_around_with_last_fm_production
-  username: playing_around_with_last_fm
-  password: <%= ENV['PLAYING_AROUND_WITH_LAST_FM_DATABASE_PASSWORD'] %>
+  url: <%= ENV['DATABASE_URL'] %>
