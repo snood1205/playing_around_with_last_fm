@@ -385,7 +385,7 @@ DEPENDENCIES
   dotenv-rails
   factory_bot_rails
   faker
-  foreman (~> 0.87.2)
+  foreman
   jbuilder
   kaminari
   listen
@@ -396,10 +396,10 @@ DEPENDENCIES
   rails
   rspec-rails
   rspec_junit_formatter
-  rubocop-capybara (~> 2.19)
-  rubocop-factory_bot (~> 2.24)
+  rubocop-capybara
+  rubocop-factory_bot
   rubocop-rails
-  rubocop-rspec (~> 2.25)
+  rubocop-rspec
   sass-rails
   shoulda-matchers
   sidekiq
