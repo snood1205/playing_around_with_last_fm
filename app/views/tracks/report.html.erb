@@ -7,7 +7,7 @@
   <h2 class="float-right">Total Scrobbles: <%= @tracks.count %></h2>
 </div>
 <div class="container">
-  <%= form_tag report_tracks_path, method: :get do %>
+  <%= form_tag track_report_url(track_username: @username), method: :get do %>
     <div class="form-group">
       <label for="time">Time Period</label>
       <%= select '', 'time', track_time_periods, {}, class: 'form-control' %>

@@ -11,14 +11,15 @@ Rails.application.routes.draw do
       end
     end
 
-    attributes.each { |attr| get attr, constraints: { track_id: /[\W\w]+/ }, on: :member }
+    attributes.each { |attr| get attr, constraints: {track_id: /[\W\w]+/}, on: :member }
+
+    get 'total'
+    get 'report'
+    get 'fetch_new_tracks'
+    get 'clear_all_tracks'
 
     # Custom collection routes
     collection do
-      get 'total'
-      get 'report'
-      get 'fetch_new_tracks'
-      get 'clear_all_tracks'
       get 'dedup'
     end
   end

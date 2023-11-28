@@ -23,7 +23,7 @@ module TracksHelper
 
     return content_tag :span if value.nil? || value.blank?
 
-    url = send "#{attribute}_track_url", value
+    url = send "#{attribute}_track_url", username, value
     link_to value, url, html_options
   end
 

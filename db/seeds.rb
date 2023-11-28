@@ -8,4 +8,4 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-Track.fetch_new_tracks ENV['USERNAME'], total_pages: 10 unless ENV['USERNAME'].nil?
+Track.fetch_new_tracks username: ENV['USERNAME'], total_pages: 10 unless ENV['USERNAME'].nil?

@@ -16,15 +16,15 @@
     <h6>Note: current importing so data might not be accurate</h6>
   <% end %>
   <%= render 'layouts/flash' %>
-  <%= render 'layouts/navbar' %>
+  <%= render 'layouts/navbar', username: current_username %>
   <%= yield %>
   <footer>
     Copyright &copy; Eli Sadoff 2019 – <span id="year"></span><br>
   </footer>
   <script type="text/javascript" charset="utf-8">
-      var year = document.getElementById('year');
-      var date = new Date;
-      year.innerText = date.getFullYear();
+    var year = document.getElementById("year");
+    var date = new Date;
+    year.innerText = date.getFullYear();
   </script>
 </div>
 </body>
