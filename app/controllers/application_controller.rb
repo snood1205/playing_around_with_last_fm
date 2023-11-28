@@ -5,5 +5,6 @@
 class ApplicationController < ActionController::Base
   include ApplicationHelper
 
+
   helper_method :track_by_actions
 end

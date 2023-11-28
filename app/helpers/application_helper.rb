@@ -49,6 +49,11 @@ module ApplicationHelper
     html_options
   end
 
+  def current_username
+    puts params
+    params[:username] || params[:track_username]
+  end
+
   private
 
   def set_active_class(path, html_options)

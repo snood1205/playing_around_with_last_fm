@@ -1,5 +1,5 @@
-<% if local_assigns.fetch :last, false %>
-  <%= link_to 'Fetch New Tracks', track_fetch_new_tracks_path(@username), class: 'btn btn-primary' %>
+<% if defined?(last) && last  %>
+  <%= link_to 'Fetch New Tracks', track_fetch_new_tracks_path(track_username: username), class: 'btn btn-primary' %>
   <%= link_to 'Dedup Tracks', dedup_tracks_path, class: 'btn btn-primary' %>
 <% end %>
 <nav aria-label="Page navigation">

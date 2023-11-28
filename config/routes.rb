@@ -11,7 +11,7 @@ Rails.application.routes.draw do
       end
     end
 
-    attributes.each { |attr| get attr, constraints: { track_id: /[\W\w]+/ }, on: :member }
+    attributes.each { |attr| get attr, constraints: {track_id: /[\W\w]+/}, on: :member }
 
     get 'total'
     get 'report'

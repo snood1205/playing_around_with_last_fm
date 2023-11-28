@@ -73,6 +73,7 @@ class TracksController < ApplicationController
       @action = method.match(/by_(\w+)/)[1]
       @action = @action.split('_and_').map(&:to_sym)
       return super unless @action.all? { |attr| VALID_BY_ACTIONS.include? attr }
+      params.permit(:track_username)
 
       count
     elsif VALID_BY_ACTIONS.include? method.to_sym
@@ -99,6 +100,7 @@ class TracksController < ApplicationController
 
   def individual_total(method)
     @title = params[:track_id]
+    puts params
     tracks = Track.where(method => @title)
     dynamic_variable_assignment tracks
     @method = method
@@ -137,6 +139,7 @@ class TracksController < ApplicationController
 
   def count
     # This is formatted as such {actions => count}
+    @username = params[:track_username]
     scoped_tracks = if @action == %i[album]
                       Track.unscoped.without_blank_album
                     else

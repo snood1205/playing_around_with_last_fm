@@ -1,7 +1,7 @@
 <div class="container">
   <h1>Songs played by <%= link_to @username, "https://www.last.fm/user/#{@username}" %></h1>
 </div>
-<%= render 'pagination' %>
+<%= render 'pagination', locals: { username: @username } %>
 <table class="table table-striped">
   <tr>
     <th scope="col">Art</th>
@@ -25,4 +25,4 @@
     </tr>
   <% end %>
 </table>
-<%= render 'pagination', last: true %>
+<%= render 'pagination', locals: { last: true, username: @username } %>
