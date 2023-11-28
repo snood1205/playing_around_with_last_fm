@@ -47,11 +47,6 @@ FileUtils.chdir APP_ROOT do
   unless check_for_env
 
     puts "\n== Getting last.fm information =="
-    print 'Input your last.fm username: '
-    username = gets.chomp
-    File.open '.env', ?a do |file|
-      file.write "USERNAME=#{username}\n"
-    end
 
     # Get user's API key to add to .env
     print 'Input your last.fm api key: '
@@ -65,12 +60,8 @@ FileUtils.chdir APP_ROOT do
   system! 'bin/rails db:drop'
   system! 'bin/rails db:create'
   system! 'bin/rails db:schema:load'
-  username = if ENV['USERNAME'].nil?
-               print 'Input your last.fm username: '
-               gets.chomp
-             else
-               ENV['USERNAME']
-             end
+  print 'Input your last.fm username: '
+  username = gets.chomp
 
   system "USERNAME=#{username} bin/rails db:seed"
 
